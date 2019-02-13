@@ -7,15 +7,31 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:label="Incoming Trips" />
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AddTripActivity"
+            android:label="Add a new trip" />
+        <activity
+            android:name=".RoundedTripActivity"
+            android:label="Rounded Trip"
+            android:theme="@style/RoundedActivityStyle" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:process=":remote" />
     </application>
 
 </manifest>

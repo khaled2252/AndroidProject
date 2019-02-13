@@ -21,31 +21,37 @@ public class TripData {
         this.status = status;
     }
 
-    public void setTripName(String tripName) {
+    public TripData(String tripName, String startPoint, String endPoint) {
         this.tripName = tripName;
-    }
-
-    public void setStartPoint(String startPoint) {
         this.startPoint = startPoint;
-    }
-
-    public void setEndPoint(String endPoint) {
         this.endPoint = endPoint;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public String getTripName() {
+        return tripName;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public String getStartPoint() {
+        return startPoint;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public String getEndPoint() {
+        return endPoint;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getNotes() {
+        return notes;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }
