@@ -1,36 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="horizontal"
-              android:padding="8dp"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-  <ImageView
-      android:layout_width="70dp"
-      android:layout_height="70dp"
-      tools:src="@tools:sample/avatars"/>
-  <LinearLayout
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+  <!--  Thumbnail image -->
+  <LinearLayout android:id="@+id/thumbnail"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:padding="5dp"
-      android:orientation="vertical">
+      android:padding="3dip"
+      android:layout_alignParentStart="true"
+      android:background="@drawable/image_bg"
+      android:layout_marginEnd="5dip">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="adkavdkndva"
-        tools:text="@tools:sample/lorem[3]" />
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="@tools:sample/lorem[4]" />
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="@tools:sample/lorem[2]" />
+    <ImageView
+        android:id="@+id/iv_thumbnail"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        />
+
   </LinearLayout>
-</LinearLayout>
+
+  <!-- Trip Name-->
+  <TextView
+      android:id="@+id/tv_trip_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignTop="@+id/thumbnail"
+      android:layout_toEndOf="@+id/thumbnail"
+      android:textColor="#040404"
+      android:typeface="sans"
+      android:textSize="15sp"
+      android:textStyle="bold"/>
+
+  <TextView
+      android:id="@+id/tv_sp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/tv_trip_name"
+      android:textColor="#343434"
+      android:textSize="12sp"
+      android:layout_marginTop="1dip"
+      android:layout_toEndOf="@+id/thumbnail"
+      android:text="Start : "  />
+
+  <!-- Start Point-->
+  <TextView
+      android:id="@+id/tv_start_point"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/tv_trip_name"
+      android:layout_toEndOf="@id/tv_sp"
+      android:textColor="#343434"
+      android:textSize="12sp"
+      android:layout_marginTop="1dip"
+
+      />
+  <TextView
+      android:id="@+id/tv_ep"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/tv_start_point"
+      android:textColor="#343434"
+      android:textSize="12sp"
+      android:layout_marginTop="1dip"
+      android:layout_toEndOf="@+id/thumbnail"
+      android:text="End   : "  />
+
+
+  <!-- End Point-->
+  <TextView
+      android:id="@+id/tv_end_point"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:textColor="#343434"
+      android:textSize="12sp"
+      android:layout_marginTop="1dip"
+      android:layout_below="@id/tv_start_point"
+      android:layout_toEndOf="@id/tv_ep"
+      />
+
+</RelativeLayout>
+
