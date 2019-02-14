@@ -1,7 +1,8 @@
 package com.example.androidproject;
 
-import android.graphics.Canvas;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,8 +20,8 @@ public class PastTripsActivity extends AppCompatActivity {
     private ArrayList<PastTripData> tripList = new ArrayList<>();
     private RecyclerView recyclerView;
     private PastTripItemAdapter pastTripItemAdapter;
-    SwipeController swipeController = null;
-    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+    SwipeController swipeController;
+    ItemTouchHelper itemTouchHelper;
 
 
     @Override
@@ -28,39 +29,38 @@ public class PastTripsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_trips);
 
-        recyclerView = findViewById(R.id.recycler_view);
+        fillTripData();
+        if(tripList.isEmpty())
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No trips");
+            builder.setMessage("You have no past trips.");
+            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 
-        SampleTripData();
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        }
+        pastTripItemAdapter = new PastTripItemAdapter(tripList,this);
+        swipeController = new SwipeController(pastTripItemAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+
+
+        recyclerView = findViewById(R.id.recycler_view);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        //recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        pastTripItemAdapter = new PastTripItemAdapter(tripList);
         recyclerView.setAdapter(pastTripItemAdapter);
 
-        swipeController = new SwipeController(new SwipeControllerActions() {
-            @Override
-            public void onRightClicked(int position) {
-                //pastTripItemAdapter.players.remove(position);
-                //mAdapter.notifyItemRemoved(position);
-                //mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount());
-            }
-        });
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(recyclerView);
-
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
     }
 
-
-    private void SampleTripData() {
+    private void fillTripData() {
         PastTripData tripData = new PastTripData ("Alexandria", "Ramsis", "Sedi-Gaber",R.drawable.alex);
         tripList.add(tripData);
 
