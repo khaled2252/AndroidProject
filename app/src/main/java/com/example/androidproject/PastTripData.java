@@ -1,13 +1,14 @@
 package com.example.androidproject;
 
-import android.media.Image;
-
 import java.util.Date;
+import com.google.android.gms.maps.model.LatLng;
 
 public class PastTripData {
     private String tripName;
     private String startPoint;
+    private LatLng startCoords;
     private String endPoint;
+    private LatLng endCoords;
     private String notes;
     private Date date;
     private String time;
@@ -22,14 +23,23 @@ public class PastTripData {
         this.date = date;
         this.time = time;
         this.status = status;
-        this.thumbnail=thumbnail;
+        this.thumbnail = thumbnail;
     }
 
-    public PastTripData(String tripName, String startPoint, String endPoint , int thumbnail) {
+    public PastTripData(String tripName, String startPoint, String endPoint, int thumbnail) {
         this.tripName = tripName;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
         this.thumbnail = thumbnail;
+    }
+
+    public PastTripData(String tripName, String startPoint, String endPoint, int thumbnail,LatLng startCoords, LatLng endCoords) {
+        this.tripName = tripName;
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+        this.thumbnail = thumbnail;
+        this.startCoords = startCoords;
+        this.endCoords = endCoords;
     }
 
     public String getTripName() {
@@ -56,11 +66,14 @@ public class PastTripData {
         return time;
     }
 
-    public String getStatus() {
-        return status;
-    }
-    public int getThumbnail()
-    {
+    public String getStatus() { return status;}
+
+    public int getThumbnail() {
         return thumbnail;
     }
+
+    public LatLng getStartCoords() { return startCoords;}
+
+    public LatLng getEndCoords() { return endCoords;}
+
 }
