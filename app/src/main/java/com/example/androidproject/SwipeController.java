@@ -47,7 +47,7 @@ class SwipeController extends Callback {
 
                 public void onClick(DialogInterface dialog, int which) {
                     int position = viewHolder.getAdapterPosition();
-                    mAdapter.deleteItem(viewHolder, position);
+                    mAdapter.deleteItem(position);
                     dialog.dismiss();
                     Toast.makeText(mAdapter.getContext(), "Trip deleted successfully. ", Toast.LENGTH_SHORT).show();
                 }

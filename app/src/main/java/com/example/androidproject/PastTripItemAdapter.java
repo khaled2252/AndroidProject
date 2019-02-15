@@ -70,10 +70,12 @@ public class PastTripItemAdapter extends RecyclerView.Adapter<PastTripItemAdapte
     public Context getContext(){
         return context;
     }
-    public void deleteItem(RecyclerView.ViewHolder holder, int position){
+    public void deleteItem(int position){
         tripList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position,tripList.size());
+
+        notifyDataSetChanged();  //Both works, this statement or the below 2 statments
+        /*notifyItemRemoved(position);
+        notifyItemRangeChanged(position,tripList.size());*/
         if(tripList.size()==0)
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -88,5 +90,10 @@ public class PastTripItemAdapter extends RecyclerView.Adapter<PastTripItemAdapte
             AlertDialog alert = builder.create();
             alert.show();
         }
+
+    }
+    public void deleteAll() {
+            tripList.clear();
+            notifyDataSetChanged();
     }
 }

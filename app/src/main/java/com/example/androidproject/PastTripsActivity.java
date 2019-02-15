@@ -2,6 +2,7 @@ package com.example.androidproject;
 
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,21 +21,26 @@ public class PastTripsActivity extends AppCompatActivity {
     private ArrayList<PastTripData> tripList = new ArrayList<>();
     private RecyclerView recyclerView;
     private PastTripItemAdapter pastTripItemAdapter;
-    SwipeController swipeController;
-    ItemTouchHelper itemTouchHelper;
-
+    private SwipeController swipeController;
+    private ItemTouchHelper itemTouchHelper;
+    private FloatingActionButton fabDeleteAll;
+    private FloatingActionButton fabMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_trips);
 
+        recyclerView = findViewById(R.id.recycler_view);
+        fabDeleteAll = findViewById(R.id.fab_delete_all);
+        fabMap = findViewById(R.id.fab_maps);
+
         fillTripData();
         if(tripList.isEmpty())
         {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("No trips");
-            builder.setMessage("You have no past trips.");
+            builder.setMessage("You have no past trips anymore.");
             builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int which) {
@@ -46,17 +52,40 @@ public class PastTripsActivity extends AppCompatActivity {
 
         }
         pastTripItemAdapter = new PastTripItemAdapter(tripList,this);
+        recyclerView.setAdapter(pastTripItemAdapter);
+
         swipeController = new SwipeController(pastTripItemAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
-
-
-        recyclerView = findViewById(R.id.recycler_view);
+        itemTouchHelper = new ItemTouchHelper(swipeController);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.setAdapter(pastTripItemAdapter);
+        fabDeleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PastTripsActivity.this);
+                builder.setTitle("Clear all trips");
+                builder.setMessage("Are you sure you want to CLEAR ALL your trip?");
+                builder.setPositiveButton("Clear", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        pastTripItemAdapter.deleteAll();
+                        Toast.makeText(PastTripsActivity.this, "All trips cleared successfully. ", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
 
     }
 
