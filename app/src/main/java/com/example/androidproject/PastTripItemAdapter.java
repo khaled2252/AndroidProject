@@ -72,28 +72,18 @@ public class PastTripItemAdapter extends RecyclerView.Adapter<PastTripItemAdapte
     }
     public void deleteItem(int position){
         tripList.remove(position);
-
         notifyDataSetChanged();  //Both works, this statement or the below 2 statments
         /*notifyItemRemoved(position);
         notifyItemRangeChanged(position,tripList.size());*/
         if(tripList.size()==0)
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("No trips");
-            builder.setMessage("You have no past trips.");
-            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
+            PastTripsActivity.ivNoTrips.setVisibility(View.VISIBLE);
         }
 
     }
     public void deleteAll() {
             tripList.clear();
             notifyDataSetChanged();
+            PastTripsActivity.ivNoTrips.setVisibility(View.VISIBLE);
     }
 }

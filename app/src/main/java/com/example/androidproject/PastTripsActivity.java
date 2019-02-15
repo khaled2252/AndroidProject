@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class PastTripsActivity extends AppCompatActivity {
     private ItemTouchHelper itemTouchHelper;
     private FloatingActionButton fabDeleteAll;
     private FloatingActionButton fabMap;
+    public static ImageView ivNoTrips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +36,12 @@ public class PastTripsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         fabDeleteAll = findViewById(R.id.fab_delete_all);
         fabMap = findViewById(R.id.fab_maps);
+        ivNoTrips = findViewById(R.id.iv_no_trips);
 
         fillTripData();
         if(tripList.isEmpty())
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("No trips");
-            builder.setMessage("You have no past trips anymore.");
-            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
-
+            ivNoTrips.setVisibility(View.VISIBLE);
         }
         pastTripItemAdapter = new PastTripItemAdapter(tripList,this);
         recyclerView.setAdapter(pastTripItemAdapter);
@@ -64,26 +56,29 @@ public class PastTripsActivity extends AppCompatActivity {
         fabDeleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(PastTripsActivity.this);
-                builder.setTitle("Clear all trips");
-                builder.setMessage("Are you sure you want to CLEAR ALL your trip?");
-                builder.setPositiveButton("Clear", new DialogInterface.OnClickListener() {
+                if(tripList.size()!=0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PastTripsActivity.this);
+                    builder.setTitle("Clear all trips");
+                    builder.setMessage("Are you sure you want to CLEAR ALL your trips?");
+                    builder.setPositiveButton("Clear", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int which) {
-                        pastTripItemAdapter.deleteAll();
-                        Toast.makeText(PastTripsActivity.this, "All trips cleared successfully. ", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            pastTripItemAdapter.deleteAll();
+                            Toast.makeText(PastTripsActivity.this, "All trips cleared successfully. ", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+                else
+                    Toast.makeText(PastTripsActivity.this, "You have no trips to delete!", Toast.LENGTH_SHORT).show();
             }
         });
 
