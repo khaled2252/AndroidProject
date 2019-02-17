@@ -2,6 +2,7 @@ package com.example.androidproject;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -37,10 +38,10 @@ public class ViewDialog extends AppCompatActivity {
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(ViewDialog.this, MainActivity.class);
+          
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps?saddr=Alexandria&daddr=Cairo"));
                 startActivity(intent);
-                finish();
             }
         });
         Button dialogButton2 = findViewById(R.id.btn_dialog_snooze);

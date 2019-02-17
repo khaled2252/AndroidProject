@@ -37,7 +37,7 @@ public class AddTripActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener onDateSetListener;
     private TimePickerDialog mTimePicker;
     private Button mSaveTrip;
-    private int mHours, mMinutes, mDayOrNight;
+    private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
 
 
     @Override
@@ -78,18 +78,20 @@ public class AddTripActivity extends AppCompatActivity {
         mCalendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar=Calendar.getInstance();
-                int year=calendar.get(Calendar.YEAR);
-                int month=calendar.get(Calendar.MONTH);
-                int day=calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datePickerDialog=new DatePickerDialog(AddTripActivity.this,
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(AddTripActivity.this,
                         onDateSetListener,
-                        year,month,day);
+                        year, month, day);
                 datePickerDialog.show();
-                onDateSetListener=new DatePickerDialog.OnDateSetListener() {
+                onDateSetListener = new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        
+                        mYear = year;
+                        mMonth = month;
+                        mDay = dayOfMonth;
                     }
                 };
             }
@@ -140,6 +142,12 @@ public class AddTripActivity extends AppCompatActivity {
                     .setMessage("Please select time to start your Trip");
             builder.show();
             valid = false;
+        } else if (mYear == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                    .setTitle("Date To Start")
+                    .setMessage("Please select Date to start your Trip");
+            builder.show();
+            valid = false;
         }
         return valid;
     }
@@ -148,6 +156,9 @@ public class AddTripActivity extends AppCompatActivity {
         AlarmManager alarmManager;
         PendingIntent pendingIntent;
         Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, mYear);
+        calendar.set(Calendar.MONTH, mMonth);
+        calendar.set(Calendar.DAY_OF_MONTH, mDay);
         calendar.set(Calendar.HOUR_OF_DAY, mHours, mDayOrNight);
         calendar.set(Calendar.MINUTE, mMinutes);
         if (calendar.before(Calendar.getInstance())) {
