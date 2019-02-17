@@ -16,7 +16,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
     <style name="RoundedActivityStyle" parent="Theme.AppCompat.Dialog">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowMinWidthMajor">100%</item>
@@ -25,6 +24,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
 
 
 </resources>
