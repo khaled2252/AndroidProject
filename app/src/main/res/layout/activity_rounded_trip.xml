@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background"
+    android:background="@color/activityBackgroundColor"
     tools:context=".RoundedTripActivity">
 
     <LinearLayout
@@ -40,7 +40,7 @@
                     android:inputType="text"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -68,7 +68,7 @@
                     android:inputType="textAutoComplete"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -96,7 +96,7 @@
                     android:inputType="textAutoComplete"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow
@@ -124,7 +124,7 @@
                     android:inputType="text"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </TableRow>
 
             <TableRow

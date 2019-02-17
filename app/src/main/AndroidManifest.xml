@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.androidproject">
 
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +18,7 @@
             android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,7 +27,14 @@
             android:label="Add a new trip" />
         <activity
             android:name=".RoundedTripActivity"
+            android:excludeFromRecents="true"
             android:label="Rounded Trip"
+            android:theme="@style/RoundedActivityStyle" />
+        <activity
+            android:name=".ViewDialog"
+            android:excludeFromRecents="true"
+            android:label="Your Trip "
+            android:showOnLockScreen="true"
             android:theme="@style/RoundedActivityStyle" />
 
         <receiver

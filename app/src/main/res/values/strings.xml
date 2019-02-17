@@ -14,4 +14,7 @@
     <string name="show_calender_to_user">Show calender to user</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="start">Start</string>
+    <string name="snooze">Snooze</string>
+    <string name="dialog_title">Time To start your trip</string>
 </resources>

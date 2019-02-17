@@ -9,5 +9,6 @@ public class RoundedTripActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rounded_trip);
+        this.setFinishOnTouchOutside(false);// if user click out side the activity it will not be dismissed
     }
 }
