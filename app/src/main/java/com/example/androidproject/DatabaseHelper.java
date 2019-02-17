@@ -5,12 +5,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.Date;
-
-import static java.sql.Types.VARCHAR;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static String DATABASE_NAME= "simpleDB";
     private static int DATABASE_VERSION=1;
