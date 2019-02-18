@@ -3,6 +3,8 @@
     package="com.example.androidproject">
 
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,6 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NotesDialogActivity"
+            android:theme="@style/RoundedActivityStyle"
+            android:excludeFromRecents="true"
+            android:label="Your Notes"/>
         <activity
             android:name=".AddTripActivity"
             android:label="Add a new trip" />
@@ -40,6 +46,7 @@
         <receiver
             android:name=".AlarmReceiver"
             android:process=":remote" />
+        <service android:name=".NotesHeadService"/>
     </application>
 
 </manifest>

@@ -17,4 +17,5 @@
     <string name="start">Start</string>
     <string name="snooze">Snooze</string>
     <string name="dialog_title">Time To start your trip</string>
+    <string name="ok">OK</string>
 </resources>

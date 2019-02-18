@@ -23,7 +23,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setContentTitle("Your Trip")
                     .setContentText("Time To start your trip");
             builder.setContentIntent(pendingIntent);
-           // builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
+            // builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
             builder.setAutoCancel(true);
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(1);
