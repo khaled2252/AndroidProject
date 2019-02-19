@@ -1,11 +1,13 @@
 package com.example.androidproject;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +19,10 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.Calendar;
 
@@ -30,6 +36,8 @@ public class RoundedTripActivity extends AppCompatActivity {
     private TimePickerDialog mTimePicker;
     private Button mSaveTrip, mCancelTrip;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
+    private final int REQUEST_CODE_AUTOCOMPLETE = 1023;
+    private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
 
 
     @Override
@@ -81,7 +89,32 @@ public class RoundedTripActivity extends AppCompatActivity {
                 };
             }
         });
-
+        mTripStartPoint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new PlaceAutocomplete.IntentBuilder()
+                        .accessToken(TOKEN_ID)
+                        .placeOptions(PlaceOptions.builder()
+                                .backgroundColor(Color.parseColor("#EEEEEE"))
+                                .limit(10)
+                                .build(PlaceOptions.MODE_CARDS))
+                        .build(RoundedTripActivity.this);
+                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 1);
+            }
+        });
+        mTripEndPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Intent intent = new PlaceAutocomplete.IntentBuilder()
+                        .accessToken(TOKEN_ID)
+                        .placeOptions(PlaceOptions.builder()
+                                .backgroundColor(Color.parseColor("#EEEEEE"))
+                                .limit(10)
+                                .build(PlaceOptions.MODE_CARDS))
+                        .build(RoundedTripActivity.this);
+                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 2);
+            }
+        });
         mAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +140,7 @@ public class RoundedTripActivity extends AppCompatActivity {
                 mTimePicker.setCancelable(false);
             }
         });
+
     }
 
     private boolean validationOfTripInformation() {
@@ -156,5 +190,18 @@ public class RoundedTripActivity extends AppCompatActivity {
         assert alarmManager != null;
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE + 1) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            mTripStartPoint.setText(feature.text());
+        }
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE + 2) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            mTripEndPoint.setText(feature.text());
+        }
     }
 }
