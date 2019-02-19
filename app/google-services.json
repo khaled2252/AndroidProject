@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "412712052696",
+    "firebase_url": "https://trip-planner-6e7cd.firebaseio.com",
+    "project_id": "trip-planner-6e7cd",
+    "storage_bucket": "trip-planner-6e7cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412712052696:android:3a27a35147cbccda",
+        "android_client_info": {
+          "package_name": "com.example.androidproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412712052696-5983cpo6c3479ss8uaheq414l6vj9rmp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.androidproject",
+            "certificate_hash": "41a84fb504d00c4c05d507f80a33b74e14b058eb"
+          }
+        },
+        {
+          "client_id": "412712052696-ug85mudvj2u4j24sprrqrgi47610ppla.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATPkPJZoaCsZhEgFdcmSpNN80_134DiDw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412712052696-ug85mudvj2u4j24sprrqrgi47610ppla.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412712052696:android:033c557f256a3e5f",
+        "android_client_info": {
+          "package_name": "com.example.androidproject.tripplanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412712052696-ug85mudvj2u4j24sprrqrgi47610ppla.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATPkPJZoaCsZhEgFdcmSpNN80_134DiDw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

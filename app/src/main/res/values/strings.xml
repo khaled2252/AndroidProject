@@ -1,20 +1,22 @@
 <resources>
-    <string name="app_name">AndroidProject</string>
-    <string name="trip_name">Trip Name</string>
-    <string name="start_point">Start Point</string>
-    <string name="end_point">End Point</string>
-    <string name="enter_your_trip_name">Enter your Trip Name</string>
-    <string name="enter_your_start_point">Enter your Start point</string>
-    <string name="enter_your_end_point">Enter your End point</string>
-    <string name="notes">Notes</string>
-    <string name="trip_type">Trip Type</string>
-    <string name="one_way">One Way</string>
-    <string name="round_trip">Round Trip</string>
-    <string name="show_alarm_dialog_to_user">Show alarm Dialog To user</string>
-    <string name="show_calender_to_user">Show calender to user</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="start">Start</string>
-    <string name="snooze">Snooze</string>
-    <string name="dialog_title">Time To start your trip</string>
-</resources>
+    <string name="title_activity_maps">Map</string>
+        <string name="app_name">AndroidProject</string>
+        <string name="trip_name">Trip Name</string>
+        <string name="start_point">Start Point</string>
+        <string name="end_point">End Point</string>
+        <string name="enter_your_trip_name">Enter your Trip Name</string>
+        <string name="enter_your_start_point">Enter your Start point</string>
+        <string name="enter_your_end_point">Enter your End point</string>
+        <string name="notes">Notes</string>
+        <string name="trip_type">Trip Type</string>
+        <string name="one_way">One Way</string>
+        <string name="round_trip">Round Trip</string>
+        <string name="show_alarm_dialog_to_user">Show alarm Dialog To user</string>
+        <string name="show_calender_to_user">Show calender to user</string>
+        <string name="save">Save</string>
+        <string name="cancel">Cancel</string>
+        <string name="start">Start</string>
+        <string name="snooze">Snooze</string>
+        <string name="dialog_title">Time To start your trip</string>
+        <string name="ok">OK</string>
+    </resources>

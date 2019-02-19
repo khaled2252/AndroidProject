@@ -25,7 +25,7 @@ public class AddTripActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(AddTripActivity.this, MainActivity.class);
+        Intent intent = new Intent(AddTripActivity.this, WelcomeActivity.class);
         startActivity(intent);
         finish();
     }
