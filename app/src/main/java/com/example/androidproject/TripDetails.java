@@ -22,7 +22,7 @@ public class TripDetails extends AppCompatActivity {
        // mListView = (ListView) findViewById(R.id.list);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
         return super.onCreateOptionsMenu(menu);
@@ -52,5 +52,5 @@ public class TripDetails extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }

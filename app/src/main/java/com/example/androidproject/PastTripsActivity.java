@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class PastTripsActivity extends AppCompatActivity {
     private ItemTouchHelper itemTouchHelper;
     private FloatingActionButton fabDeleteAll;
     private FloatingActionButton fabMap;
+    private ImageView ivUpcommingTrips;
     public static ImageView ivNoTrips;
 
     @Override
@@ -37,6 +39,7 @@ public class PastTripsActivity extends AppCompatActivity {
         fabDeleteAll = findViewById(R.id.fab_delete_all);
         fabMap = findViewById(R.id.fab_maps);
         ivNoTrips = findViewById(R.id.iv_no_trips);
+        //ivUpcommingTrips = findViewById(R.id.i);
 
         fillTripDataAndCoords();
         if (tripList.isEmpty()) {
@@ -86,6 +89,22 @@ public class PastTripsActivity extends AppCompatActivity {
                 startActivity(new Intent(PastTripsActivity.this, MapsActivity.class));
             }
         });
+
+       /* ivUpcommingTrips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(PastTripsActivity.this, "hhhhhh", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(PastTripsActivity.this,MainActivity.class));
+                finish();
+            }
+        });*/
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(PastTripsActivity.this,WelcomeActivity.class));
     }
 
     private void fillTripData() {
