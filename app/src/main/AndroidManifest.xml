@@ -43,24 +43,26 @@
             ></activity>
         <activity android:name=".PastTripsActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".WelcomeActivity"
             android:theme="@style/AppTheme2">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme2">
         </activity>
+        <activity android:name=".SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".SignupActivity"
             android:theme="@style/AppTheme2">
         </activity>
+        <activity android:name=".TripDetails"/>
     </application>
 
 </manifest>

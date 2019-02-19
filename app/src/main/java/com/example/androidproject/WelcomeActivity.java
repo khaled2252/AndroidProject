@@ -3,13 +3,10 @@ package com.example.androidproject;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity {
 
     Button signup;
     Button signin;
@@ -25,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent signup1 = new Intent(MainActivity.this, SignupActivity.class);
+                Intent signup1 = new Intent(WelcomeActivity.this, SignupActivity.class);
                 startActivity(signup1);
             }
         });
@@ -33,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent login1 = new Intent(MainActivity.this, LoginActivity.class);
+                Intent login1 = new Intent(WelcomeActivity.this, LoginActivity.class);
                 startActivity(login1);
             }
         });
