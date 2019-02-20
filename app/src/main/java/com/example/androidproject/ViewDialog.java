@@ -69,6 +69,8 @@ public class ViewDialog extends AppCompatActivity {
                 registerReceiver(alarmReceiver, intentFilter);
                 Intent broadCastIntent = new Intent();
                 broadCastIntent.putExtra("name", "Snooze");
+                //todo getRequestCode from database
+                broadCastIntent.putExtra("requestCode", 0);
                 broadCastIntent.setAction("com.example.Broadcast");
                 broadCastIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                 sendBroadcast(broadCastIntent);

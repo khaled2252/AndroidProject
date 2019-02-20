@@ -19,4 +19,7 @@
         <string name="snooze">Snooze</string>
         <string name="dialog_title">Time To start your trip</string>
         <string name="ok">OK</string>
-    </resources>
+    <string name="trip_statue">Trip Statue</string>
+    <string name="done">Done</string>
+    <string name="date_and_time">Date and Time</string>
+</resources>

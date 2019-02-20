@@ -42,6 +42,7 @@
             android:label="Your Trip "
             android:showOnLockScreen="true"
             android:theme="@style/RoundedActivityStyle" />
+        <activity android:name=".TripDetails" />
 
         <receiver
             android:name=".AlarmReceiver"

@@ -31,7 +31,7 @@ public class AddTripActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(AddTripActivity.this, WelcomeActivity.class);
+        Intent intent = new Intent(AddTripActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -45,6 +45,7 @@ public class AddTripActivity extends AppCompatActivity {
     private Button mSaveTrip;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
     private final int REQUEST_CODE_AUTOCOMPLETE = 1023;
+    private  int mAlarmRequestCode = 0;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
 
 
@@ -79,7 +80,13 @@ public class AddTripActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (validationOfTripInformation()) {
-                    setAlarm();
+                    if (!checkIfTripNameIsAlreadyExists()) {
+                        setAlarm();
+                        insertTripToDataBase();
+                    } else {
+                        mTripName.setError("Name of the trip is already exists");
+                    }
+
                 }
             }
         });
@@ -194,16 +201,48 @@ public class AddTripActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("name", "Alarm");
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), mAlarmRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
     }
 
+    private boolean checkIfTripNameIsAlreadyExists() {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
+        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
+    }
+
+    private void insertTripToDataBase() {
+        String tripName = mTripName.getText().toString();
+        String tripStartPoint = mTripStartPoint.getText().toString();
+        String tripEndPoint = mTripEndPoint.getText().toString();
+        String tripNotes;
+        if (mTripNotes.getText().toString().isEmpty()) {
+            tripNotes = "No Notes";
+        } else {
+            tripNotes = mTripNotes.getText().toString();
+        }
+        String tripType;
+        if (mRoundedTrip.isChecked()) {
+            tripType = "rounded";
+        } else {
+            tripType = "one way";
+        }
+        String tripStatues = "Incoming";
+        String tripTime = String.valueOf(mHours + " : " + mMinutes + " " + mDayOrNight);
+        String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
+        String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
+        // todo insert to db
+    }
+
+    private void setmAlarmRequestCode(){
+        //todo: select from data base and assign to alarm request code
+        mAlarmRequestCode=0;
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //  super.onActivityResult(requestCode, resultCode, data);
+         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             CarmenFeature feature = PlaceAutocomplete.getPlace(data);
             if (requestCode == 1111) {

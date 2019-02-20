@@ -17,7 +17,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             context.startActivity(intent);
         } else if (i.getStringExtra("name").equals("Snooze")) {
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, ViewDialog.class), 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, Integer.valueOf(i.getStringExtra("requestCode")), new Intent(context, ViewDialog.class), 0);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.logo)
                     .setContentTitle("Your Trip")

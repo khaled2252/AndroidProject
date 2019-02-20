@@ -44,7 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
         FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser() != null){
             //Intent user account
-            startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+            startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
             finish();
         }
     }
