@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 /**
  * Created by Khaled on 29-Jan-19.
  */
@@ -20,27 +22,38 @@ public class DatabaseAdapter {
         dbHelper = new DatabaseHelper(context);
     }
 
-    public long insertData(String name, String startName, String startLat, String startLon, String endName, String endLat, String endLon) {
+    public long insertInitialTripData(String tripName, String startName, String endName, String notes, String type,
+                                      String date, String time, String status, String alarmRequestCode) {
         db = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
+        contentValues.put("tripname", tripName);
         contentValues.put("startname", startName);
-        contentValues.put("startlat", startLat);
-        contentValues.put("startlon", startLon);
         contentValues.put("endname", endName);
-        contentValues.put("endlat", endLat);
-        contentValues.put("endlon", endLon);
+        contentValues.put("notes", notes);
+        contentValues.put("tripType", type);
+        contentValues.put("date", date);
+        contentValues.put("time", time);
+        contentValues.put("status", status);
+        contentValues.put("requestcode", alarmRequestCode);
         return db.insert("trips", null, contentValues);
     }
 
-    public String getData(String colName) {
+    public long updateTripData(String tripName, String colName, String value) {
+        db = dbHelper.getWritableDatabase();
+        ContentValues args = new ContentValues();
+        args.put(colName, value);
+        db.update("trips", args, "tripname" + "=" + tripName, null);
+        return db.insert("trips", null, args);
+    }
+
+    public String getDataFromTrip(String colName, String tripName) {
         db = dbHelper.getReadableDatabase();
-        String query = "SELECT $colName FROM trips;";
+        String query = "SELECT $colName FROM trips WHERE tripname=$tripName;";
         query = query.replace("$colName", colName);
+        query = query.replace("$tripName", tripName);
         Cursor c = db.rawQuery(query, null);
         while (c.moveToNext()) {
-            if (c.isLast())//return only last inserted record
-                return c.getString(0);
+            return c.getString(0);
         }
         return "No Data";
     }
@@ -51,6 +64,36 @@ public class DatabaseAdapter {
         Cursor c = db.rawQuery(query, null);
         return c.moveToNext();
 
+    }
+
+    public ArrayList<TripData> getAllIncomingTrips() {
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM trips WHERE status = 'Incoming' ;";
+        // query = query.replace("$sta", "Incoming");
+        Cursor c = db.rawQuery(query, null);
+        ArrayList<TripData> aL = new ArrayList<>();
+        TripData tripData;
+        while (c.moveToNext()) {
+            tripData = new TripData(c.getString(0), c.getString(1), c.getString(2));
+            aL.add(tripData);
+            tripData = null;
+        }
+
+        return aL;
+    }
+
+    public ArrayList getAllDataFromTrip(String tripName) {
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM trips WHERE tripname = '" + tripName + "';";
+        Cursor c = db.rawQuery(query, null);
+        ArrayList aL = new ArrayList();
+        int i = 0;
+        while (c.moveToNext()) {
+            for (int w = 0; w < c.getColumnCount(); w++)
+                aL.add(c.getString(w));
+            i++;
+        }
+        return aL;
     }
 }
 

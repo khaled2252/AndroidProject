@@ -210,7 +210,8 @@ public class AddTripActivity extends AppCompatActivity {
 
     private boolean checkIfTripNameIsAlreadyExists() {
         DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
-        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
+//        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
+  return false;
     }
 
     private void insertTripToDataBase() {
@@ -234,6 +235,12 @@ public class AddTripActivity extends AppCompatActivity {
         String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
         String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
         // todo insert to db
+        DatabaseAdapter databaseAdapter=new DatabaseAdapter(this);
+   long result=  databaseAdapter.insertInitialTripData(tripName,tripStartPoint,tripEndPoint,tripNotes,tripType,tripDate,tripTime,tripStatues,tripAlarmRequestCode);
+    if(result!=-1)
+    {
+        Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
+    }
     }
 
     private void setmAlarmRequestCode(){

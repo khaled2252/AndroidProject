@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#b30808</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="activityBackgroundColor">#ffffff</color>
-    <color name="dividerColor">#1f640a</color>
-    <color name="textColor">#1f640a</color>
+    <color name="colorPrimary">#0082c5</color>
+    <color name="colorPrimaryDark">#DAD7D7</color>
+    <color name="colorAccent">#0082c5</color>
+    <color name="activityBackgroundColor">#DAD7D7</color>
+    <color name="dividerColor">#0082c5</color>
+    <color name="textColor">#000</color>
 </resources>

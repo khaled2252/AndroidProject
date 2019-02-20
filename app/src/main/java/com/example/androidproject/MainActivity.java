@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<TripData> tripList = new ArrayList<>();
+    private ArrayList<TripData> tripList ;
     private RecyclerView recyclerView;
     private TripAdapter mAdapter;
 
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         recyclerView = findViewById(R.id.list_of_incoming_trips);
-
+prepareTripData();
         mAdapter = new TripAdapter(tripList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, int position) {
                 Intent intent=new Intent(MainActivity.this,TripDetails.class);
+                intent.putExtra("tripName",tripList.get(position).getTripName());
                 startActivity(intent);
                 finish();
             }
@@ -63,12 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private void prepareTripData() {
         // todo get data from database
         // todo add activity when no data found
-        TripData tripData = new TripData("Mad Max: Fury Road", "Action & Adventure", "2015");
-        tripList.add(tripData);
-
-        TripData tripData2 = new TripData("Mad Max: Fury Road", "Action & Adventure", "2015");
-        tripList.add(tripData2);
-        TripData tripData3 = new TripData("Mad Max: Fury Road", "Action & Adventure", "2015");
-           tripList.add(tripData3);
+      DatabaseAdapter databaseAdapter=new DatabaseAdapter(MainActivity.this);
+      tripList=databaseAdapter.getAllIncomingTrips();
     }
 }

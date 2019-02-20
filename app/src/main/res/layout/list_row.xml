@@ -6,7 +6,6 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardBackgroundColor="@color/colorPrimary"
     card_view:cardCornerRadius="5dp"
     card_view:cardElevation="5dp"
     card_view:cardUseCompatPadding="true"
@@ -20,6 +19,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="100dp"
+            android:background="@color/colorPrimary"
             android:layout_weight="0.3"
             android:padding="10dp"
             android:src="@drawable/plane" />
@@ -29,6 +29,8 @@
             android:layout_height="match_parent"
             android:layout_weight="0.7"
             android:gravity="center"
+            android:padding="5dp"
+            android:background="#fff"
             android:orientation="vertical">
 
             <TextView
@@ -36,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/trip_name"
-                android:textColor="@color/textColor"
+                android:textColor="#000"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -45,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/start_point"
-                android:textColor="@color/textColor"
+                android:textColor="#000"
                 android:textSize="15sp" />
 
             <TextView
@@ -53,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/end_point"
-                android:textColor="@color/textColor"
+                android:textColor="#000"
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>

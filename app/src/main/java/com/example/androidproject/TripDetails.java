@@ -26,6 +26,7 @@ import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class TripDetails extends AppCompatActivity {
@@ -46,7 +47,7 @@ public class TripDetails extends AppCompatActivity {
     private TimePickerDialog mTimePicker;
     private Button mSaveTrip;
     private CheckBox mTripIsDone;
-    private TextView mDateAndTime, mDateAndTimeValue;
+    private TextView mDateAndTime, mDateAndTimeValue, mTripStatue;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
 
@@ -68,10 +69,11 @@ public class TripDetails extends AppCompatActivity {
         mTripIsDone = findViewById(R.id.check_box_trip_details_trip_done);
         mDateAndTime = findViewById(R.id.txt_trip_details_trip_time_and_date);
         mDateAndTimeValue = findViewById(R.id.txt_trip_details_trip_time_and_date_value);
-
+        mTripStatue = findViewById(R.id.txt_trip_details_trip_statue);
 
 
         // todo : get data from database
+        setData();
 
         mRoundedTrip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -86,8 +88,7 @@ public class TripDetails extends AppCompatActivity {
         mTripIsDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
+                if (isChecked) {
                     // todo : change statue of trip in database to done
                 }
             }
@@ -174,6 +175,23 @@ public class TripDetails extends AppCompatActivity {
                 mTimePicker.setCancelable(false);
             }
         });
+    }
+
+    private void setData() {
+        Intent intent = getIntent();
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(TripDetails.this);
+        ArrayList arrayList = databaseAdapter.getAllDataFromTrip(intent.getStringExtra("tripName"));
+        mTripName.setText(arrayList.get(0).toString());
+        mTripStartPoint.setText(arrayList.get(1).toString());
+        mTripEndPoint.setText(arrayList.get(2).toString());
+        mTripNotes.setText(arrayList.get(3).toString());
+        if (arrayList.get(4).toString().equals("one way")) {
+            mOneWayTrip.setChecked(true);
+        } else {
+            mRoundedTrip.setChecked(true);
+        }
+        mDateAndTimeValue.setText(arrayList.get(5).toString() + "  " + arrayList.get(6).toString());
+        mTripStatue.setText(arrayList.get(7).toString());
     }
 
     private boolean validationOfTripInformation() {

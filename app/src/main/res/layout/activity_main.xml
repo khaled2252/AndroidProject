@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cardview_dark_background"
+    android:background="@color/activityBackgroundColor"
     tools:context=".MainActivity">
 
     <android.support.v7.widget.RecyclerView
@@ -25,7 +25,7 @@
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
-            android:background="@color/dividerColor"
+            android:background="#9AA3CE"
             android:padding="5dp"
             android:src="@drawable/incoming_trips" />
 
@@ -55,18 +55,15 @@
             android:src="@android:drawable/ic_popup_sync" />
 
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6" />
+
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fb_incoming_trip_add_trip"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
+        android:layout_gravity="end|bottom"
+        android:layout_marginBottom="60dp"
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/add_sign" />

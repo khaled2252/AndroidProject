@@ -3,15 +3,21 @@
     package="com.example.androidproject">
 
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
         <activity
             android:name=".MainActivity"
             android:label="Incoming Trips" />
@@ -21,13 +27,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NotesDialogActivity"
-            android:theme="@style/RoundedActivityStyle"
+        <activity
+            android:name=".NotesDialogActivity"
             android:excludeFromRecents="true"
-            android:label="Your Notes"/>
+            android:label="Your Notes"
+            android:theme="@style/RoundedActivityStyle" />
+        <activity android:name=".WelcomeActivity"
+            android:theme="@style/SplashScreenTheme"/>
+        <activity android:name=".SignupActivity"
+            android:theme="@style/SplashScreenTheme"/>
+        <activity android:name=".LoginActivity"
+            android:theme="@style/SplashScreenTheme"/>
+        <activity android:name=".PastTripsActivity" />
+        <activity android:name=".MapsActivity" />
         <activity
             android:name=".AddTripActivity"
             android:label="Add a new trip" />
@@ -47,7 +63,7 @@
         <receiver
             android:name=".AlarmReceiver"
             android:process=":remote" />
-        <service android:name=".NotesHeadService"/>
+        <service android:name=".NotesHeadService" />
     </application>
 
 </manifest>
