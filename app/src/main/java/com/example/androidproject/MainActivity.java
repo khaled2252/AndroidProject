@@ -8,12 +8,13 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<TripData> tripList ;
+    private ArrayList<TripData> tripList;
     private RecyclerView recyclerView;
     private TripAdapter mAdapter;
 
@@ -22,6 +23,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FloatingActionButton mAddTrip = findViewById(R.id.fb_incoming_trip_add_trip);
+        ImageView mPastTrips = findViewById(R.id.img_incoming_trip_past_trips);
+        mPastTrips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PastTripsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                overridePendingTransition(0,0);
+                startActivity(intent);
+                finish();
+            }
+        });
         mAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -31,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         recyclerView = findViewById(R.id.list_of_incoming_trips);
-prepareTripData();
+        prepareTripData();
         mAdapter = new TripAdapter(tripList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -48,8 +61,8 @@ prepareTripData();
                 recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Intent intent=new Intent(MainActivity.this,TripDetails.class);
-                intent.putExtra("tripName",tripList.get(position).getTripName());
+                Intent intent = new Intent(MainActivity.this, TripDetails.class);
+                intent.putExtra("tripName", tripList.get(position).getTripName());
                 startActivity(intent);
                 finish();
             }
@@ -62,9 +75,7 @@ prepareTripData();
     }
 
     private void prepareTripData() {
-        // todo get data from database
-        // todo add activity when no data found
-      DatabaseAdapter databaseAdapter=new DatabaseAdapter(MainActivity.this);
-      tripList=databaseAdapter.getAllIncomingTrips();
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(MainActivity.this);
+        tripList = databaseAdapter.getAllIncomingTrips();
     }
 }

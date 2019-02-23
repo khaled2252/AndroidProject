@@ -28,7 +28,6 @@ import java.util.Calendar;
 
 public class RoundedTripActivity extends AppCompatActivity {
 
-
     private EditText mTripName, mTripStartPoint, mTripEndPoint, mTripNotes;
     private ImageView mAlarm, mCalendar;
     private AlarmManager alarmManager;
@@ -37,6 +36,7 @@ public class RoundedTripActivity extends AppCompatActivity {
     private Button mSaveTrip, mCancelTrip;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
     private final int REQUEST_CODE_AUTOCOMPLETE = 1023;
+    private int mAlarmRequestCode = 0;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
 
 
@@ -54,11 +54,19 @@ public class RoundedTripActivity extends AppCompatActivity {
         mSaveTrip = findViewById(R.id.btn_add_rounded_trip_save_trip);
         mCancelTrip = findViewById(R.id.btn_add_rounded_trip_cancel_trip);
 
+        getStartAndEndPoint();
+
         mSaveTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validationOfTripInformation()) {
-                    setAlarm();
+                    if (!checkIfTripNameIsAlreadyExists()) {
+                        setAlarm();
+                        insertTripToDataBase();
+                    } else {
+                        mTripName.setError("Name of the trip is already exists");
+                    }
+
                 }
             }
         });
@@ -85,34 +93,30 @@ public class RoundedTripActivity extends AppCompatActivity {
                         mYear = year;
                         mMonth = month;
                         mDay = dayOfMonth;
+                        Toast.makeText(RoundedTripActivity.this, mYear + "  " + (mMonth + 1) + " " + mDay, Toast.LENGTH_SHORT).show();
                     }
                 };
             }
         });
-        mTripStartPoint.setOnClickListener(new View.OnClickListener() {
+        final Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(TOKEN_ID)
+                .placeOptions(PlaceOptions.builder()
+                        .backgroundColor(Color.parseColor("#EEEEEE"))
+                        .limit(10)
+                        .build(PlaceOptions.MODE_CARDS))
+                .build(RoundedTripActivity.this);
+        mTripStartPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new PlaceAutocomplete.IntentBuilder()
-                        .accessToken(TOKEN_ID)
-                        .placeOptions(PlaceOptions.builder()
-                                .backgroundColor(Color.parseColor("#EEEEEE"))
-                                .limit(10)
-                                .build(PlaceOptions.MODE_CARDS))
-                        .build(RoundedTripActivity.this);
-                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 1);
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 1);
             }
         });
         mTripEndPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                Intent intent = new PlaceAutocomplete.IntentBuilder()
-                        .accessToken(TOKEN_ID)
-                        .placeOptions(PlaceOptions.builder()
-                                .backgroundColor(Color.parseColor("#EEEEEE"))
-                                .limit(10)
-                                .build(PlaceOptions.MODE_CARDS))
-                        .build(RoundedTripActivity.this);
-                startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 2);
+                if (hasFocus)
+                    startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE + 2);
             }
         });
         mAlarm.setOnClickListener(new View.OnClickListener() {
@@ -125,12 +129,15 @@ public class RoundedTripActivity extends AppCompatActivity {
                         if (selectedHour > 12) {
                             mHours = selectedHour - 12;
                             mDayOrNight = Calendar.PM;
+                        } else if (selectedHour == 12) {
+                            mHours = selectedHour;
+                            mDayOrNight = Calendar.PM;
                         } else {
                             mHours = selectedHour;
                             mDayOrNight = Calendar.AM;
                         }
                         mMinutes = selectedMinute;
-                        Toast.makeText(RoundedTripActivity.this, String.valueOf(mHours + "  " + mMinutes), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RoundedTripActivity.this, String.valueOf(mHours + " : " + mMinutes), Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -167,8 +174,17 @@ public class RoundedTripActivity extends AppCompatActivity {
                     .setMessage("Please select Date to start your Trip");
             builder.show();
             valid = false;
+        } else if (mTripStartPoint.getText().toString().equals(mTripEndPoint.getText().toString())) {
+            mTripEndPoint.setError("End Point can not be the same as Start Point");
+            valid = false;
         }
         return valid;
+    }
+
+    private void setAlarmRequestCode() {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(RoundedTripActivity.this);
+        int numberOfIncomingTrips = databaseAdapter.getAllTrips();
+        mAlarmRequestCode = numberOfIncomingTrips + 1;
     }
 
     private void setAlarm() {
@@ -178,18 +194,52 @@ public class RoundedTripActivity extends AppCompatActivity {
         calendar.set(Calendar.YEAR, mYear);
         calendar.set(Calendar.MONTH, mMonth);
         calendar.set(Calendar.DAY_OF_MONTH, mDay);
-        calendar.set(Calendar.HOUR_OF_DAY, mHours, mDayOrNight);
+        calendar.set(Calendar.HOUR_OF_DAY, mHours);
+        calendar.set(Calendar.AM_PM, mDayOrNight);
         calendar.set(Calendar.MINUTE, mMinutes);
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DATE, 1);
         }
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("tripName", mTripName.getText().toString());
         intent.putExtra("name", "Alarm");
+        setAlarmRequestCode();
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
+    }
+
+    private boolean checkIfTripNameIsAlreadyExists() {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(RoundedTripActivity.this);
+        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
+    }
+
+    private void insertTripToDataBase() {
+        String tripName = mTripName.getText().toString();
+        String tripStartPoint = mTripStartPoint.getText().toString();
+        String tripEndPoint = mTripEndPoint.getText().toString();
+        String tripNotes;
+        if (mTripNotes.getText().toString().isEmpty()) {
+            tripNotes = "No Notes";
+        } else {
+            tripNotes = mTripNotes.getText().toString();
+        }
+        String tripType = "one way";
+        String mAM_PM = "AM";
+        if (mDayOrNight == 1)
+            mAM_PM = "PM";
+        String tripTime = String.valueOf(mHours + " : " + mMinutes + " " + mAM_PM);
+        String tripStatues = "Incoming";
+        String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
+        String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
+        // todo insert to db
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(this);
+        long result = databaseAdapter.insertInitialTripData(tripName, tripStartPoint, tripEndPoint, tripNotes, tripType, tripDate, tripTime, tripStatues, tripAlarmRequestCode);
+        if (result != -1) {
+            Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -202,6 +252,21 @@ public class RoundedTripActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_AUTOCOMPLETE + 2) {
             CarmenFeature feature = PlaceAutocomplete.getPlace(data);
             mTripEndPoint.setText(feature.text());
+        }
+    }
+
+    private void getStartAndEndPoint() {
+        // get start and end point from the main trip
+        Intent intent = getIntent();
+        // the start point of main trip is the end point of rounded trip
+        String mEndPoint = intent.getStringExtra("tripStartPoint");
+        if (mEndPoint!=null&&!mEndPoint.isEmpty()) {
+            mTripEndPoint.setText(mEndPoint);
+        }
+        // the end point of main trip is the start point of rounded trip
+        String mStartPoint = intent.getStringExtra("tripEndPoint");
+        if (mStartPoint!=null&&!mStartPoint.isEmpty()) {
+            mTripStartPoint.setText(mStartPoint);
         }
     }
 }

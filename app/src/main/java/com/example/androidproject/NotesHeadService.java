@@ -1,8 +1,6 @@
 package com.example.androidproject;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -18,9 +16,20 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 public class NotesHeadService extends Service {
+
     private WindowManager mWindowManager;
     private View mNoteHeadView;
-    private ImageView mNotesHead;
+    private ImageView mNotesHead,mAddNewNote,mCloseHead;
+    private String mTripName;
+    private Intent intent;
+    private int initialX;
+    private int initialY;
+    private float initialTouchX;
+    private float initialTouchY;
+    private static final int MAX_CLICK_DURATION = 200;
+    private long startClickTime;
+    private  int i=0;
+    private WindowManager.LayoutParams params;
 
     public NotesHeadService() {
     }
@@ -32,6 +41,12 @@ public class NotesHeadService extends Service {
     }
 
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        mTripName = intent.getStringExtra("tripName");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate() {
@@ -41,12 +56,13 @@ public class NotesHeadService extends Service {
 
 
         //Add the view to the window.
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
+
 
         //Specify the chat head position
         //Initially view will be added to top-left corner
@@ -60,7 +76,7 @@ public class NotesHeadService extends Service {
         mWindowManager.addView(mNoteHeadView, params);
 
         //Set the close button.
-        ImageView mCloseHead = mNoteHeadView.findViewById(R.id.img_notes_close);
+        mCloseHead  = mNoteHeadView.findViewById(R.id.img_notes_close);
         mCloseHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,20 +87,16 @@ public class NotesHeadService extends Service {
 
         //Drag and move chat head using user's touch action.
         mNotesHead = mNoteHeadView.findViewById(R.id.img_notes_head);
-        mNotesHead.setOnClickListener(new View.OnClickListener() {
+        mAddNewNote=mNoteHeadView.findViewById(R.id.img_notes_add_new_one);
+        mAddNewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(NotesHeadService.this, "scadsa", Toast.LENGTH_SHORT).show();
+                intent = new Intent(getApplicationContext(), NotesDialogActivity.class);
+                intent.putExtra("tripName", mTripName);
+                startActivity(intent);
             }
         });
-
         mNotesHead.setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-            private static final int MAX_CLICK_DURATION = 200;
-            private long startClickTime;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -99,17 +111,27 @@ public class NotesHeadService extends Service {
                         startClickTime = Calendar.getInstance().getTimeInMillis();
                         break;
                     case MotionEvent.ACTION_UP:
+                        //  if it was a click from user
                         long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                         if (clickDuration < MAX_CLICK_DURATION) {
-                            Intent intent = new Intent(getApplicationContext(), NotesDialogActivity.class);
-                            startActivity(intent);
+                            if (i % 2 == 0) {
+                                mAddNewNote.setVisibility(View.VISIBLE);
+                                mCloseHead.setVisibility(View.VISIBLE);
+                                mWindowManager.updateViewLayout(mNoteHeadView, params);
+                                i++;
+                            } else {
+                                mAddNewNote.setVisibility(View.GONE);
+                                mCloseHead.setVisibility(View.GONE);
+                                mWindowManager.updateViewLayout(mNoteHeadView, params);
+                                i++;
+                            }
+                            Toast.makeText(NotesHeadService.this, "clicked", Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         //Calculate the X and Y coordinates of the view.
                         params.x = initialX + (int) (event.getRawX() - initialTouchX);
                         params.y = initialY + (int) (event.getRawY() - initialTouchY);
-
                         //Update the layout with new X & Y coordinate
                         mWindowManager.updateViewLayout(mNoteHeadView, params);
                         break;
@@ -123,6 +145,7 @@ public class NotesHeadService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mNoteHeadView != null) mWindowManager.removeView(mNoteHeadView);
+        if (mNoteHeadView != null)
+            mWindowManager.removeView(mNoteHeadView);
     }
 }

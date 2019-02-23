@@ -6,10 +6,13 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,6 +31,7 @@ import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.StringTokenizer;
 
 public class TripDetails extends AppCompatActivity {
 
@@ -46,10 +50,11 @@ public class TripDetails extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener onDateSetListener;
     private TimePickerDialog mTimePicker;
     private Button mSaveTrip;
-    private CheckBox mTripIsDone;
     private TextView mDateAndTime, mDateAndTimeValue, mTripStatue;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
+    private int mAlarmRequestCode = 0;
+    private DatabaseAdapter databaseAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +71,11 @@ public class TripDetails extends AppCompatActivity {
         mAlarm = findViewById(R.id.img_trip_details_alarm);
         mCalendar = findViewById(R.id.img_trip_details_calendar);
         mSaveTrip = findViewById(R.id.btn_trip_details_save_trip);
-        mTripIsDone = findViewById(R.id.check_box_trip_details_trip_done);
         mDateAndTime = findViewById(R.id.txt_trip_details_trip_time_and_date);
         mDateAndTimeValue = findViewById(R.id.txt_trip_details_trip_time_and_date_value);
         mTripStatue = findViewById(R.id.txt_trip_details_trip_statue);
 
+        databaseAdapter = new DatabaseAdapter(TripDetails.this);
 
         // todo : get data from database
         setData();
@@ -80,16 +85,12 @@ public class TripDetails extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Intent intent = new Intent(TripDetails.this, RoundedTripActivity.class);
+                    if (!mTripStartPoint.getText().toString().isEmpty())
+                        intent.putExtra("tripStartPoint", mTripStartPoint.getText().toString());
+                    if (!mTripEndPoint.getText().toString().isEmpty())
+                        intent.putExtra("tripEndPoint", mTripEndPoint.getText().toString());
                     startActivity(intent);
 
-                }
-            }
-        });
-        mTripIsDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // todo : change statue of trip in database to done
                 }
             }
         });
@@ -103,6 +104,7 @@ public class TripDetails extends AppCompatActivity {
                 } else if (mSaveTrip.getText().toString().toLowerCase().equals("save")) {
                     if (validationOfTripInformation()) {
                         setAlarm();
+                        insertTripToDataBase();
                     }
                 }
 
@@ -125,6 +127,7 @@ public class TripDetails extends AppCompatActivity {
                         mYear = year;
                         mMonth = month;
                         mDay = dayOfMonth;
+                        Toast.makeText(TripDetails.this, mYear + "  " + (mMonth + 1) + " " + mDay, Toast.LENGTH_SHORT).show();
                     }
                 };
             }
@@ -190,8 +193,108 @@ public class TripDetails extends AppCompatActivity {
         } else {
             mRoundedTrip.setChecked(true);
         }
-        mDateAndTimeValue.setText(arrayList.get(5).toString() + "  " + arrayList.get(6).toString());
+        String mAlarmDate = arrayList.get(5).toString();
+        String mAlarmTime = arrayList.get(6).toString();
+        String[] stringTime = mAlarmTime.split(" : ");
+        mHours = Integer.parseInt(stringTime[0]);
+        mMinutes = Integer.parseInt(stringTime[1]);
+        if (stringTime[2].equals("AM"))
+            mDayOrNight = 0;
+        else
+            mDayOrNight = 1;
+        String[] stringDate = mAlarmDate.split(" / ");
+        mYear = Integer.parseInt(stringDate[2]);
+        mMonth = Integer.parseInt(stringDate[1]);
+        mDay = Integer.parseInt(stringDate[0]);
+        mDateAndTimeValue.setText(mAlarmDate + "  " + mAlarmTime);
         mTripStatue.setText(arrayList.get(7).toString());
+        getAlarmRequestCode();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
+            if (requestCode == 1111) {
+                mTripStartPoint.setText(feature.text());
+            } else if (requestCode == 2222) {
+                mTripEndPoint.setText(feature.text());
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.menu_item_trip_details_delete_trip) {
+            createAlertDialog("Do you want to delete this trip ?", "Trip Is deleted Successfully", "Deleted");
+        } else if (item.getItemId() == R.id.menu_item_trip_details_cancel_trip) {
+            createAlertDialog("Do you want to cancel this trip ?", "Trip Is Canceled Successfully", "Canceled");
+        } else if (item.getItemId() == R.id.menu_item_trip_details_done_trip) {
+            createAlertDialog("Do you want to mark this trip  as Finished?", "Trip Is Finished Successfully", "Done");
+        } else if (item.getItemId() == R.id.menu_item_trip_details_edit_trip) {
+            enableAllViews();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void createAlertDialog(String msg, final String toastMessage, final String newStatue) {
+        AlertDialog.Builder a_builder = new AlertDialog.Builder(this);
+        a_builder.setMessage(msg).setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        boolean changed = changeTripStatue(newStatue);
+                        if (changed) {
+                            Toast.makeText(TripDetails.this, toastMessage, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(TripDetails.this, MainActivity.class);
+                            startActivity(intent);
+                            dialogInterface.cancel();
+                            finish();
+                        }
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+        AlertDialog alert = a_builder.create();
+        alert.setTitle("Alert!!");
+        alert.show();
+    }
+
+    private boolean changeTripStatue(String statue) {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(this);
+        int numberOfRowsAffected = databaseAdapter.updateTripData(mTripName.getText().toString(), "status", statue);
+        cancelAlarm();
+        return numberOfRowsAffected > 0;
+    }
+
+    private void enableAllViews() {
+        mRoundedTrip.setEnabled(true);
+        mOneWayTrip.setEnabled(true);
+        mDateAndTimeValue.setVisibility(View.GONE);
+        mDateAndTime.setVisibility(View.GONE);
+        mAlarm.setVisibility(View.VISIBLE);
+        mCalendar.setVisibility(View.VISIBLE);
+        mTripNotes.setEnabled(true);
+        mSaveTrip.setText(getString(R.string.save));
+    }
+
+
+    private void getAlarmRequestCode() {
+        mAlarmRequestCode = Integer.parseInt(databaseAdapter.getDataFromTrip("requestcode", mTripName.getText().toString()));
     }
 
     private boolean validationOfTripInformation() {
@@ -218,6 +321,9 @@ public class TripDetails extends AppCompatActivity {
                     .setMessage("Please select Date to start your Trip");
             builder.show();
             valid = false;
+        } else if (mTripStartPoint.getText().toString().equals(mTripEndPoint.getText().toString())) {
+            mTripEndPoint.setError("End Point can not be the same as Start Point");
+            valid = false;
         }
         return valid;
     }
@@ -229,62 +335,59 @@ public class TripDetails extends AppCompatActivity {
         calendar.set(Calendar.YEAR, mYear);
         calendar.set(Calendar.MONTH, mMonth);
         calendar.set(Calendar.DAY_OF_MONTH, mDay);
-        calendar.set(Calendar.HOUR_OF_DAY, mHours, mDayOrNight);
+        calendar.set(Calendar.HOUR_OF_DAY, mHours);
+        calendar.set(Calendar.AM_PM, mDayOrNight);
         calendar.set(Calendar.MINUTE, mMinutes);
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DATE, 1);
         }
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("tripName", mTripName.getText().toString());
         intent.putExtra("name", "Alarm");
-        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        getAlarmRequestCode();
+        pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), mAlarmRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            CarmenFeature feature = PlaceAutocomplete.getPlace(data);
-            if (requestCode == 1111) {
-                mTripStartPoint.setText(feature.text());
-            } else if (requestCode == 2222) {
-                mTripEndPoint.setText(feature.text());
-            }
+    private void cancelAlarm() {
+        AlarmManager aManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(TripDetails.this, mAlarmRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        assert aManager != null;
+        aManager.cancel(pIntent);
+    }
+
+    private void insertTripToDataBase() {
+        String tripName = mTripName.getText().toString().toLowerCase();
+        String tripStartPoint = mTripStartPoint.getText().toString();
+        String tripEndPoint = mTripEndPoint.getText().toString();
+        String tripNotes;
+        if (mTripNotes.getText().toString().isEmpty()) {
+            tripNotes = "No Notes";
+        } else {
+            tripNotes = mTripNotes.getText().toString();
+        }
+        String tripType;
+        if (mRoundedTrip.isChecked()) {
+            tripType = "rounded";
+        } else {
+            tripType = "one way";
+        }
+        String tripStatues = "Incoming";
+        String mAM_PM = "AM";
+        if (mDayOrNight == 1)
+            mAM_PM = "PM";
+        String tripTime = String.valueOf(mHours + " : " + mMinutes + " " + mAM_PM);
+        String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
+        String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
+
+        long result = databaseAdapter.insertInitialTripData(tripName, tripStartPoint, tripEndPoint, tripNotes, tripType, tripDate, tripTime, tripStatues, tripAlarmRequestCode);
+        if (result != -1) {
+            Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if(item.getItemId()==R.id.delete){
-            AlertDialog.Builder a_builder=new AlertDialog.Builder(this);
-            a_builder.setMessage("Do you want to delete this trip!!").setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    })
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-            AlertDialog alert=a_builder.create();
-            alert.setTitle("Alert!!");
-            alert.show();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }

@@ -27,7 +27,14 @@ public class LoginActivity extends Activity {
     //Authentication
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    @Override
+    public void onBackPressed() {
 
+        super.onBackPressed();
+        Intent login1 = new Intent(LoginActivity.this, WelcomeActivity.class);
+        startActivity(login1);
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +50,7 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 Intent signup2 = new Intent(LoginActivity.this, SignupActivity.class);
                 startActivity(signup2);
+                finish();
             }
         });
 
@@ -53,7 +61,7 @@ public class LoginActivity extends Activity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null){
                     //Intent user account
-                    startActivity(new Intent(LoginActivity.this, PastTripsActivity.class));
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 }
             }
@@ -85,6 +93,7 @@ public class LoginActivity extends Activity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                         else {
                             Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();

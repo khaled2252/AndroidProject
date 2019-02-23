@@ -13,7 +13,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent i) {
         if (i.getStringExtra("name").equals("Alarm")) {
+            //get trip name from intent coming from AddTripActivity
             Intent intent = new Intent(context, ViewDialog.class);
+            intent.putExtra("tripName", i.getStringExtra("tripName"));
             context.startActivity(intent);
         } else if (i.getStringExtra("name").equals("Snooze")) {
 
@@ -23,7 +25,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setContentTitle("Your Trip")
                     .setContentText("Time To start your trip");
             builder.setContentIntent(pendingIntent);
-            // builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
             builder.setAutoCancel(true);
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(1);

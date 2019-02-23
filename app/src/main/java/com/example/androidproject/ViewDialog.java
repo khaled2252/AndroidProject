@@ -1,5 +1,7 @@
 package com.example.androidproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -14,8 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ViewDialog extends AppCompatActivity {
+public class ViewDialog extends AppCompatActivity implements View.OnClickListener {
     private AlarmReceiver alarmReceiver;
+    private String mTripName, mStartPoint, mEndPoint;
+    private DatabaseAdapter databaseAdapter;
+    private Button mStartTrip, mSnoozeTrip, mCancelTrip;
 
     @Override
     public void onBackPressed() {
@@ -33,70 +38,35 @@ public class ViewDialog extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_dialog_activity);
-        this.setFinishOnTouchOutside(false);// if user click out side the activity it will not be dismissed
+
         TextView text = findViewById(R.id.text_dialog);
-        text.setText(R.string.dialog_title);
 
-        Button dialogButton = findViewById(R.id.btn_dialog_start);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        mStartTrip = findViewById(R.id.btn_dialog_start);
+        mCancelTrip = findViewById(R.id.btn_dialog_cancel);
+        mSnoozeTrip = findViewById(R.id.btn_dialog_snooze);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ViewDialog.this)) {
+        // if user click out side the activity it will not be dismissed
+        this.setFinishOnTouchOutside(false);
 
-                    //If the draw over permission is not available open the settings screen
-                    //to grant the permission.
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(intent, 2002);
-                } else {
-                    startService(new Intent(ViewDialog.this, NotesHeadService.class));
-                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                            Uri.parse("http://maps.google.com/maps?saddr=Alexandria&daddr=Cairo"));
-                    startActivity(intent);
-                    finish();
 
-                }
-            }
-        });
-        Button dialogButton2 = findViewById(R.id.btn_dialog_snooze);
-        dialogButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alarmReceiver = new AlarmReceiver();
-                IntentFilter intentFilter = new IntentFilter();
-                intentFilter.addAction("com.example.Broadcast");
-                registerReceiver(alarmReceiver, intentFilter);
-                Intent broadCastIntent = new Intent();
-                broadCastIntent.putExtra("name", "Snooze");
-                //todo getRequestCode from database
-                broadCastIntent.putExtra("requestCode", 0);
-                broadCastIntent.setAction("com.example.Broadcast");
-                broadCastIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-                sendBroadcast(broadCastIntent);
-                finish();
-            }
-        });
+        getStartAndEndPointOfTrip();
+
+        text.setText(getString(R.string.dialog_title).concat(" " + mEndPoint));
+        mStartTrip.setOnClickListener(this);
+        mSnoozeTrip.setOnClickListener(this);
+        mCancelTrip.setOnClickListener(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 2002) {
-
-            //Check if the permission is granted or not.
-            // Settings activity never returns proper value so instead check with following method
             if (Settings.canDrawOverlays(this)) {
-                startService(new Intent(ViewDialog.this, NotesHeadService.class));
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps?saddr=Alexandria&daddr=Cairo"));
-                startActivity(intent);
-                finish();
-            } else { //Permission is not available
-                Toast.makeText(this,
-                        "Draw over other app permission not available. Closing the application",
+                openGoogleMaps();
+            } else {
+                //Permission is not available
+                Toast.makeText(this, "Draw over other app permission not available. Closing the application",
                         Toast.LENGTH_SHORT).show();
-
                 finish();
             }
         } else {
@@ -104,4 +74,92 @@ public class ViewDialog extends AppCompatActivity {
         }
     }
 
+    private void getTripName() {
+        //get trip name from intent coming from AlarmReceiver
+        Intent intent = getIntent();
+        mTripName = intent.getStringExtra("tripName");
+    }
+
+    private void getStartAndEndPointOfTrip() {
+        getTripName();
+        databaseAdapter = new DatabaseAdapter(ViewDialog.this);
+        mStartPoint = databaseAdapter.getDataFromTrip("startname", mTripName);
+        mEndPoint = databaseAdapter.getDataFromTrip("endname", mTripName);
+    }
+
+    private boolean changeTripTypeToCanceled() {
+        int numberOfRowsAffected = databaseAdapter.updateTripData(mTripName, "status", "Canceled");
+        return numberOfRowsAffected > 0;
+    }
+
+    private void checkIfPermissionIsGenerated() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(ViewDialog.this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 2002);
+        } else {
+            // if permission is generated
+            openGoogleMaps();
+        }
+    }
+
+    private void openGoogleMaps() {
+        Intent intentService = new Intent(ViewDialog.this, NotesHeadService.class);
+        intentService.putExtra("tripName", mTripName);
+        startService(intentService);
+        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?saddr=" + mStartPoint + "&daddr=" + mEndPoint));
+        startActivity(intent);
+        finish();
+    }
+
+    private void showCancelConformationDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(ViewDialog.this)
+                .setTitle("Cancel Trip")
+                .setMessage("Are you sure You Want to cancel the trip")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean changed = changeTripTypeToCanceled();
+                        if (changed)
+                            finish();
+                        else
+                            Toast.makeText(ViewDialog.this, "Click Again , Please", Toast.LENGTH_SHORT).show();
+
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        alertDialog.show();
+    }
+
+    private void createSnoozeNotification() {
+        alarmReceiver = new AlarmReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.example.Broadcast");
+        registerReceiver(alarmReceiver, intentFilter);
+        Intent broadCastIntent = new Intent();
+        broadCastIntent.putExtra("name", "Snooze");
+        broadCastIntent.putExtra("requestCode", "0");
+        broadCastIntent.setAction("com.example.Broadcast");
+        broadCastIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        sendBroadcast(broadCastIntent);
+        finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mStartTrip) {
+            // if true , open google maps
+            checkIfPermissionIsGenerated();
+        } else if (v == mSnoozeTrip) {
+            createSnoozeNotification();
+        } else if (v == mCancelTrip) {
+            showCancelConformationDialog();
+        }
+
+    }
 }

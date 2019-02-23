@@ -45,7 +45,7 @@ public class AddTripActivity extends AppCompatActivity {
     private Button mSaveTrip;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
     private final int REQUEST_CODE_AUTOCOMPLETE = 1023;
-    private  int mAlarmRequestCode = 0;
+    private int mAlarmRequestCode = 0;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
 
 
@@ -71,6 +71,10 @@ public class AddTripActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Intent intent = new Intent(AddTripActivity.this, RoundedTripActivity.class);
+                    if (!mTripStartPoint.getText().toString().isEmpty())
+                        intent.putExtra("tripStartPoint", mTripStartPoint.getText().toString());
+                    if (!mTripEndPoint.getText().toString().isEmpty())
+                        intent.putExtra("tripEndPoint", mTripEndPoint.getText().toString());
                     startActivity(intent);
 
                 }
@@ -107,6 +111,7 @@ public class AddTripActivity extends AppCompatActivity {
                         mYear = year;
                         mMonth = month;
                         mDay = dayOfMonth;
+                        Toast.makeText(AddTripActivity.this, mYear + "  " + (mMonth + 1) + " " + mDay, Toast.LENGTH_SHORT).show();
                     }
                 };
             }
@@ -142,12 +147,15 @@ public class AddTripActivity extends AppCompatActivity {
                         if (selectedHour > 12) {
                             mHours = selectedHour - 12;
                             mDayOrNight = Calendar.PM;
+                        } else if (selectedHour == 12) {
+                            mHours = selectedHour;
+                            mDayOrNight = Calendar.PM;
                         } else {
                             mHours = selectedHour;
                             mDayOrNight = Calendar.AM;
                         }
                         mMinutes = selectedMinute;
-                        Toast.makeText(AddTripActivity.this, String.valueOf(mHours + "  " + mMinutes), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddTripActivity.this, String.valueOf(mHours + " : " + mMinutes), Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -183,6 +191,9 @@ public class AddTripActivity extends AppCompatActivity {
                     .setMessage("Please select Date to start your Trip");
             builder.show();
             valid = false;
+        } else if (mTripStartPoint.getText().toString().equals(mTripEndPoint.getText().toString())) {
+            mTripEndPoint.setError("End Point can not be the same as Start Point");
+            valid = false;
         }
         return valid;
     }
@@ -194,13 +205,16 @@ public class AddTripActivity extends AppCompatActivity {
         calendar.set(Calendar.YEAR, mYear);
         calendar.set(Calendar.MONTH, mMonth);
         calendar.set(Calendar.DAY_OF_MONTH, mDay);
-        calendar.set(Calendar.HOUR_OF_DAY, mHours, mDayOrNight);
+        calendar.set(Calendar.HOUR_OF_DAY, mHours);
+        calendar.set(Calendar.AM_PM, mDayOrNight);
         calendar.set(Calendar.MINUTE, mMinutes);
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DATE, 1);
         }
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("tripName", mTripName.getText().toString());
         intent.putExtra("name", "Alarm");
+        setAlarmRequestCode();
         pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), mAlarmRequestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
@@ -210,12 +224,11 @@ public class AddTripActivity extends AppCompatActivity {
 
     private boolean checkIfTripNameIsAlreadyExists() {
         DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
-//        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
-  return false;
+        return databaseAdapter.nameOfTripAlreadyExists(mTripName.getText().toString());
     }
 
     private void insertTripToDataBase() {
-        String tripName = mTripName.getText().toString();
+        String tripName = mTripName.getText().toString().toLowerCase();
         String tripStartPoint = mTripStartPoint.getText().toString();
         String tripEndPoint = mTripEndPoint.getText().toString();
         String tripNotes;
@@ -231,25 +244,29 @@ public class AddTripActivity extends AppCompatActivity {
             tripType = "one way";
         }
         String tripStatues = "Incoming";
-        String tripTime = String.valueOf(mHours + " : " + mMinutes + " " + mDayOrNight);
+        String mAM_PM = "AM";
+        if (mDayOrNight == 1)
+            mAM_PM = "PM";
+        String tripTime = String.valueOf(mHours + " : " + mMinutes + " : " + mAM_PM);
         String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
         String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
         // todo insert to db
-        DatabaseAdapter databaseAdapter=new DatabaseAdapter(this);
-   long result=  databaseAdapter.insertInitialTripData(tripName,tripStartPoint,tripEndPoint,tripNotes,tripType,tripDate,tripTime,tripStatues,tripAlarmRequestCode);
-    if(result!=-1)
-    {
-        Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
-    }
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(this);
+        long result = databaseAdapter.insertInitialTripData(tripName, tripStartPoint, tripEndPoint, tripNotes, tripType, tripDate, tripTime, tripStatues, tripAlarmRequestCode);
+        if (result != -1) {
+            Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void setmAlarmRequestCode(){
-        //todo: select from data base and assign to alarm request code
-        mAlarmRequestCode=0;
+    private void setAlarmRequestCode() {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
+        int numberOfIncomingTrips = databaseAdapter.getAllTrips();
+        mAlarmRequestCode = numberOfIncomingTrips + 1;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-         super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             CarmenFeature feature = PlaceAutocomplete.getPlace(data);
             if (requestCode == 1111) {

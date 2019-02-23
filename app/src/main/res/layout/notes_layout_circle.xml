@@ -12,9 +12,24 @@
         android:src="@drawable/logo" />
 
     <ImageView
+        android:id="@+id/img_notes_add_new_one"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignEnd="@+id/img_notes_head"
+        android:layout_marginEnd="-61dp"
+        android:background="#D61818"
+        android:visibility="invisible"
+        android:src="@drawable/add_sign" />
+
+    <ImageView
         android:id="@+id/img_notes_close"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:src="@android:drawable/ic_menu_close_clear_cancel" />
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/img_notes_add_new_one"
+        android:layout_alignEnd="@+id/img_notes_head"
+        android:layout_marginTop="38dp"
+        android:visibility="visible"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_marginEnd="-63dp" />
 
 </RelativeLayout>

@@ -38,19 +38,16 @@ public class DatabaseAdapter {
         return db.insert("trips", null, contentValues);
     }
 
-    public long updateTripData(String tripName, String colName, String value) {
+    public int updateTripData(String tripName, String colName, String value) {
         db = dbHelper.getWritableDatabase();
         ContentValues args = new ContentValues();
         args.put(colName, value);
-        db.update("trips", args, "tripname" + "=" + tripName, null);
-        return db.insert("trips", null, args);
+        return db.update("trips", args, "tripname" + "=" + "'"+tripName+"'", null);
     }
 
     public String getDataFromTrip(String colName, String tripName) {
         db = dbHelper.getReadableDatabase();
-        String query = "SELECT $colName FROM trips WHERE tripname=$tripName;";
-        query = query.replace("$colName", colName);
-        query = query.replace("$tripName", tripName);
+        String query = "SELECT " + colName + " FROM trips WHERE tripname = '" + tripName + "';";
         Cursor c = db.rawQuery(query, null);
         while (c.moveToNext()) {
             return c.getString(0);
@@ -60,10 +57,20 @@ public class DatabaseAdapter {
 
     public boolean nameOfTripAlreadyExists(String tripName) {
         db = dbHelper.getReadableDatabase();
-        String query = "SELECT * FROM trips where name = " + tripName.toLowerCase() + " ;";
+        String query = "SELECT * FROM trips where tripname = '" + tripName.toLowerCase() + "' ;";
         Cursor c = db.rawQuery(query, null);
         return c.moveToNext();
 
+    }
+
+    public int getAllTrips() {
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM trips ;";
+        Cursor c = db.rawQuery(query, null);
+        int count = 0;
+        while (c.moveToNext())
+            count++;
+        return count;
     }
 
     public ArrayList<TripData> getAllIncomingTrips() {
@@ -94,6 +101,30 @@ public class DatabaseAdapter {
             i++;
         }
         return aL;
+    }
+    public ArrayList<TripData> getAllPastTrips() {
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM trips WHERE status != 'Incoming' ;";
+        Cursor c = db.rawQuery(query, null);
+        ArrayList<TripData> aL = new ArrayList<>();
+        TripData tripData;
+        while (c.moveToNext()) {
+            tripData = new TripData(c.getString(0), c.getString(1), c.getString(2));
+            aL.add(tripData);
+            tripData = null;
+        }
+
+        return aL;
+    }
+    public long deleteTrip(String tripName)
+    {
+        db = dbHelper.getWritableDatabase();
+        return db.delete("trips", "tripname" + " = " +"'" +tripName+"'" +" AND" + " status" + "!=" + "'Incoming'", null);
+    }
+    public long deleteAllTrips()
+    {
+        db = dbHelper.getWritableDatabase();
+        return db.delete("trips", "status" + "!=" +"'Incoming'", null);
     }
 }
 

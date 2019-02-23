@@ -45,6 +45,15 @@ public class SignupActivity extends Activity {
     private final static int RC_SIGN_IN = 123;
 
     @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+        Intent login1 = new Intent(SignupActivity.this, WelcomeActivity.class);
+        startActivity(login1);
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
@@ -61,6 +70,7 @@ public class SignupActivity extends Activity {
             public void onClick(View v) {
                 Intent login2 = new Intent(SignupActivity.this, LoginActivity.class);
                 startActivity(login2);
+                finish();
             }
         });
 
@@ -71,7 +81,7 @@ public class SignupActivity extends Activity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null){
                     //Intent user account
-                    startActivity(new Intent(SignupActivity.this, PastTripsActivity.class));
+                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
                     finish();
                 }
             }
@@ -126,7 +136,7 @@ public class SignupActivity extends Activity {
 
                         if (task.isSuccessful()) {
                             Toast.makeText(SignupActivity.this, "Register Successfully", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(SignupActivity.this, PastTripsActivity.class);
+                            Intent intent = new Intent(SignupActivity.this, MainActivity.class);
                             startActivity(intent);
 
                         } else {
@@ -167,8 +177,9 @@ public class SignupActivity extends Activity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Intent home = new Intent(SignupActivity.this, PastTripsActivity.class);
+                            Intent home = new Intent(SignupActivity.this, MainActivity.class);
                             startActivity(home);
+                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
