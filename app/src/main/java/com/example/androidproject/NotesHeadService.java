@@ -1,7 +1,9 @@
 package com.example.androidproject;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
@@ -19,8 +21,8 @@ public class NotesHeadService extends Service {
 
     private WindowManager mWindowManager;
     private View mNoteHeadView;
-    private ImageView mNotesHead,mAddNewNote,mCloseHead;
-    private String mTripName;
+    private ImageView mNotesHead, mAddNewNote, mCloseHead, mShowNotes;
+    private String mTripName, mTripNotes;
     private Intent intent;
     private int initialX;
     private int initialY;
@@ -28,7 +30,7 @@ public class NotesHeadService extends Service {
     private float initialTouchY;
     private static final int MAX_CLICK_DURATION = 200;
     private long startClickTime;
-    private  int i=0;
+    private boolean isFABOpen = false;
     private WindowManager.LayoutParams params;
 
     public NotesHeadService() {
@@ -54,7 +56,6 @@ public class NotesHeadService extends Service {
         //Inflate the chat head layout we created
         mNoteHeadView = LayoutInflater.from(this).inflate(R.layout.notes_layout_circle, null);
 
-
         //Add the view to the window.
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -68,7 +69,7 @@ public class NotesHeadService extends Service {
         //Initially view will be added to top-left corner
         params.gravity = Gravity.TOP | Gravity.START;
         params.x = 0;
-        params.y = 100;
+        params.y = 300;
 
         //Add the view to the window
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -76,7 +77,8 @@ public class NotesHeadService extends Service {
         mWindowManager.addView(mNoteHeadView, params);
 
         //Set the close button.
-        mCloseHead  = mNoteHeadView.findViewById(R.id.img_notes_close);
+        mCloseHead = mNoteHeadView.findViewById(R.id.img_notes_close);
+        mShowNotes = mNoteHeadView.findViewById(R.id.img_notes_show_notes);
         mCloseHead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,13 +89,26 @@ public class NotesHeadService extends Service {
 
         //Drag and move chat head using user's touch action.
         mNotesHead = mNoteHeadView.findViewById(R.id.img_notes_head);
-        mAddNewNote=mNoteHeadView.findViewById(R.id.img_notes_add_new_one);
+        mAddNewNote = mNoteHeadView.findViewById(R.id.img_notes_add_new_one);
+        mShowNotes.setVisibility(View.GONE);
+        mCloseHead.setVisibility(View.GONE);
+        mAddNewNote.setVisibility(View.GONE);
         mAddNewNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAddNewNoteDialog();
+            }
+        });
+        mShowNotes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 intent = new Intent(getApplicationContext(), NotesDialogActivity.class);
                 intent.putExtra("tripName", mTripName);
                 startActivity(intent);
+                mShowNotes.setVisibility(View.GONE);
+                mCloseHead.setVisibility(View.GONE);
+                mAddNewNote.setVisibility(View.GONE);
+                isFABOpen = false;
             }
         });
         mNotesHead.setOnTouchListener(new View.OnTouchListener() {
@@ -114,18 +129,17 @@ public class NotesHeadService extends Service {
                         //  if it was a click from user
                         long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
                         if (clickDuration < MAX_CLICK_DURATION) {
-                            if (i % 2 == 0) {
-                                mAddNewNote.setVisibility(View.VISIBLE);
+                            if (!isFABOpen) {
+                                mShowNotes.setVisibility(View.VISIBLE);
                                 mCloseHead.setVisibility(View.VISIBLE);
-                                mWindowManager.updateViewLayout(mNoteHeadView, params);
-                                i++;
+                                mAddNewNote.setVisibility(View.VISIBLE);
+                                isFABOpen = true;
                             } else {
-                                mAddNewNote.setVisibility(View.GONE);
+                                mShowNotes.setVisibility(View.GONE);
                                 mCloseHead.setVisibility(View.GONE);
-                                mWindowManager.updateViewLayout(mNoteHeadView, params);
-                                i++;
+                                mAddNewNote.setVisibility(View.GONE);
+                                isFABOpen = false;
                             }
-                            Toast.makeText(NotesHeadService.this, "clicked", Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -147,5 +161,17 @@ public class NotesHeadService extends Service {
         super.onDestroy();
         if (mNoteHeadView != null)
             mWindowManager.removeView(mNoteHeadView);
+    }
+
+
+    private void showAddNewNoteDialog() {
+        intent = new Intent(getApplicationContext(), AddNewNoteDialogActivity.class);
+        intent.putExtra("tripName", mTripName);
+        startActivity(intent);
+        mShowNotes.setVisibility(View.GONE);
+        mCloseHead.setVisibility(View.GONE);
+        mAddNewNote.setVisibility(View.GONE);
+        isFABOpen = false;
+
     }
 }

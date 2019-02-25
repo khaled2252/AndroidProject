@@ -22,7 +22,7 @@
             android:background="@color/colorPrimary"
             android:layout_weight="0.3"
             android:padding="10dp"
-            android:src="@drawable/plane" />
+            android:src="@drawable/trip" />
 
         <LinearLayout
             android:layout_width="0dp"

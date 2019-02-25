@@ -1,104 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DAD7D7"
+    android:background="@color/activityBackgroundColor"
+    android:orientation="vertical"
     tools:context=".LoginActivity">
-
-    <EditText
-        android:id="@+id/emailtxt"
-        android:layout_width="253dp"
-        android:layout_height="46dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="273dp"
-        android:layout_marginEnd="44dp"
-        android:layout_marginRight="44dp"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="53dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="64dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginTop="247dp"
-        android:text="E-mail"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="98dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="63dp"
-        android:layout_marginLeft="63dp"
-        android:layout_marginTop="327dp"
-        android:text="Password"
-        android:textSize="18sp" />
-
-    <EditText
-        android:id="@+id/passtxt"
-        android:layout_width="255dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="353dp"
-        android:layout_marginEnd="42dp"
-        android:layout_marginRight="42dp"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/logoimg"
         android:layout_width="232dp"
         android:layout_height="178dp"
-        android:layout_alignStart="@+id/loginbtn"
-        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
         android:layout_marginTop="37dp"
         android:src="@drawable/logo" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="E-mail : "
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/emailtxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:textSize="14sp" />
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="Password"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/passtxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:textSize="12sp" />
+
     <Button
         android:id="@+id/loginbtn"
-        android:layout_width="232dp"
-        android:layout_height="37dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="67dp"
-        android:layout_marginLeft="67dp"
-        android:layout_marginBottom="113dp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
         android:background="@drawable/buttons_shape"
+        android:padding="15dp"
         android:text="Login"
-        android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFF"
         android:textSize="18sp" />
 
     <TextView
         android:id="@+id/backsignupbtn"
-        android:layout_width="253dp"
-        android:layout_height="26dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="45dp"
-        android:layout_marginRight="45dp"
-        android:layout_marginBottom="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Don't have an account? SignUp"
+        android:textSize="20sp" />
 
-        android:text="Don't hava an account? Signup"
-        android:textSize="18sp" />
-
-</RelativeLayout>
+</LinearLayout>

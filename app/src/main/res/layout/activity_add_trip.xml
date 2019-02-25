@@ -66,6 +66,7 @@
                     android:layout_weight="0.7"
                     android:hint="@string/enter_your_start_point"
                     android:inputType="textAutoComplete"
+                    android:focusable="false"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"
                     android:textSize="20sp" />
@@ -93,6 +94,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="0.7"
                     android:hint="@string/enter_your_end_point"
+                    android:focusable="false"
                     android:inputType="textAutoComplete"
                     android:textColor="@color/dividerColor"
                     android:textColorHint="@color/dividerColor"

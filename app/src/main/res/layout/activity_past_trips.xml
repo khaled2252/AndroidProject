@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/activityBackgroundColor"
     android:orientation="vertical"
-    android:background="#FFF"
     tools:context=".PastTripsActivity">
 
     <LinearLayout
@@ -53,13 +53,12 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/notrips"
-        android:layout_gravity="center"
-        android:visibility="gone"
         android:id="@+id/iv_no_trips"
-        />
+        android:layout_width="126dp"
+        android:layout_height="126dp"
+        android:layout_gravity="center"
+        android:src="@drawable/no_trips"
+        android:visibility="gone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_delete_all"
@@ -69,7 +68,7 @@
         android:layout_marginBottom="60dp"
         android:clickable="true"
         android:src="@drawable/trash"
-        app:backgroundTint="@android:color/darker_gray"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@+id/linear_options"
         app:layout_anchorGravity="right|bottom" />
 
@@ -77,17 +76,18 @@
         android:id="@+id/fab_invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:layout_marginRight="5dp"
         android:src="@drawable/trash"
+        android:visibility="invisible"
         app:layout_anchor="@id/fab_delete_all"
         app:layout_anchorGravity="top|right" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_invisible2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
         android:layout_marginRight="5dp"
+        android:visibility="invisible"
         app:layout_anchor="@id/fab_invisible"
         app:layout_anchorGravity="top|right" />
 
@@ -99,7 +99,7 @@
         android:layout_marginBottom="10dp"
         android:clickable="true"
         android:src="@drawable/map"
-        app:backgroundTint="@android:color/darker_gray"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_anchor="@+id/fab_invisible2"
         app:layout_anchorGravity="top|right" />
 

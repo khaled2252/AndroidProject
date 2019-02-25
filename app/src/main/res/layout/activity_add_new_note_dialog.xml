@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#DA5F6A"
+    android:orientation="vertical"
+    tools:context=".AddNewNoteDialogActivity">
+
+    <EditText
+        android:id="@+id/edt_add_new_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add Your Notes"
+        android:inputType="text|textMultiLine"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_add_new_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="5dp"
+            android:text="@string/add"
+            android:textAllCaps="false"
+            android:textColor="#ffffffff"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btn_cancel_add_new_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="5dp"
+            android:text="@string/cancel"
+            android:textColor="#ffffffff"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+</LinearLayout>

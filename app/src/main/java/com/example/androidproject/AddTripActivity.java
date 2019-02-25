@@ -26,7 +26,7 @@ import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.Calendar;
 
-public class AddTripActivity extends AppCompatActivity {
+public class AddTripActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     @Override
     public void onBackPressed() {
@@ -44,10 +44,12 @@ public class AddTripActivity extends AppCompatActivity {
     private TimePickerDialog mTimePicker;
     private Button mSaveTrip;
     private int mHours, mMinutes, mDayOrNight, mYear, mMonth, mDay;
-    private final int REQUEST_CODE_AUTOCOMPLETE = 1023;
     private int mAlarmRequestCode = 0;
     private final String TOKEN_ID = "pk.eyJ1IjoiYWJkZWxyaG1hbjIiLCJhIjoiY2pzYWdpMWduMDF3OTN6cnAwbjI2aTRuZyJ9.3vox5ROe8b2k7_OSItrDpw";
-
+    private DatePickerDialog datePickerDialog;
+    private Intent intent;
+    private String tripTime;
+    private String tripDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,108 +65,28 @@ public class AddTripActivity extends AppCompatActivity {
         mAlarm = findViewById(R.id.img_add_trip_alarm);
         mCalendar = findViewById(R.id.img_add_trip_calendar);
         mSaveTrip = findViewById(R.id.btn_add_trip_save_trip);
-
         mOneWayTrip.setChecked(true);
 
-        mRoundedTrip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Intent intent = new Intent(AddTripActivity.this, RoundedTripActivity.class);
-                    if (!mTripStartPoint.getText().toString().isEmpty())
-                        intent.putExtra("tripStartPoint", mTripStartPoint.getText().toString());
-                    if (!mTripEndPoint.getText().toString().isEmpty())
-                        intent.putExtra("tripEndPoint", mTripEndPoint.getText().toString());
-                    startActivity(intent);
-
-                }
-            }
-        });
-        mSaveTrip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validationOfTripInformation()) {
-                    if (!checkIfTripNameIsAlreadyExists()) {
-                        setAlarm();
-                        insertTripToDataBase();
-                    } else {
-                        mTripName.setError("Name of the trip is already exists");
-                    }
-
-                }
-            }
-        });
-        mCalendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(AddTripActivity.this,
-                        onDateSetListener,
-                        year, month, day);
-                datePickerDialog.show();
-                onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        mYear = year;
-                        mMonth = month;
-                        mDay = dayOfMonth;
-                        Toast.makeText(AddTripActivity.this, mYear + "  " + (mMonth + 1) + " " + mDay, Toast.LENGTH_SHORT).show();
-                    }
-                };
-            }
-        });
-        final Intent intent = new PlaceAutocomplete.IntentBuilder()
-                .accessToken(TOKEN_ID)
-                .placeOptions(PlaceOptions.builder()
-                        .backgroundColor(Color.parseColor("#EEEEEE"))
-                        .limit(10)
-                        .build(PlaceOptions.MODE_CARDS))
-                .build(AddTripActivity.this);
-        mTripStartPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    startActivityForResult(intent, 1111);
-            }
-        });
-        mTripEndPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    startActivityForResult(intent, 2222);
-            }
-        });
-        mAlarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                mTimePicker = new TimePickerDialog(AddTripActivity.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        if (selectedHour > 12) {
-                            mHours = selectedHour - 12;
-                            mDayOrNight = Calendar.PM;
-                        } else if (selectedHour == 12) {
-                            mHours = selectedHour;
-                            mDayOrNight = Calendar.PM;
-                        } else {
-                            mHours = selectedHour;
-                            mDayOrNight = Calendar.AM;
-                        }
-                        mMinutes = selectedMinute;
-                        Toast.makeText(AddTripActivity.this, String.valueOf(mHours + " : " + mMinutes), Toast.LENGTH_SHORT).show();
+        initializePlaceCompleteIntent();
 
 
-                    }
-                }, 0, 0, false);
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
-                mTimePicker.setCancelable(false);
+        mRoundedTrip.setOnCheckedChangeListener(this);
+        mAlarm.setOnClickListener(this);
+        mCalendar.setOnClickListener(this);
+        mTripStartPoint.setOnClickListener(this);
+        mTripEndPoint.setOnClickListener(this);
+        mSaveTrip.setOnClickListener(this);
+
+        onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                mYear = year;
+                mMonth = month;
+                mDay = dayOfMonth;
+                Toast.makeText(AddTripActivity.this, mYear + "  " + (mMonth + 1) + " " + mDay, Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+
     }
 
     private boolean validationOfTripInformation() {
@@ -194,8 +116,44 @@ public class AddTripActivity extends AppCompatActivity {
         } else if (mTripStartPoint.getText().toString().equals(mTripEndPoint.getText().toString())) {
             mTripEndPoint.setError("End Point can not be the same as Start Point");
             valid = false;
+        } else if (checkIfTripDateAndTimeIsInPast()) {
+            Toast.makeText(this, "You  a trip date is in the past", Toast.LENGTH_SHORT).show();
+            valid = false;
+        } else if (checkIfThereIsAnotherTripInTheSameTime()) {
+            Toast.makeText(this, "You have a trip at the same date", Toast.LENGTH_SHORT).show();
+            valid = false;
         }
         return valid;
+    }
+
+    private boolean checkIfThereIsAnotherTripInTheSameTime() {
+        createTripDateAndTime();
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
+        String name = databaseAdapter.getDataFromTripByDateAndTime("tripname", tripDate, tripTime);
+        return !name.equals("No Data");
+    }
+
+    private boolean checkIfTripDateAndTimeIsInPast() {
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH);
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR);
+        int minutes = now.get(Calendar.MINUTE);
+        if (year > mYear) {
+            return true;
+        } else if (month > mMonth) {
+            return true;
+        } else if (day > mDay) {
+            return true;
+        } else if (hour > mHours) {
+            return true;
+        } else if (minutes > mMinutes) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     private void setAlarm() {
@@ -244,24 +202,54 @@ public class AddTripActivity extends AppCompatActivity {
             tripType = "one way";
         }
         String tripStatues = "Incoming";
-        String mAM_PM = "AM";
-        if (mDayOrNight == 1)
-            mAM_PM = "PM";
-        String tripTime = String.valueOf(mHours + " : " + mMinutes + " : " + mAM_PM);
-        String tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
+        createTripDateAndTime();
         String tripAlarmRequestCode = String.valueOf(mAlarmRequestCode);
         // todo insert to db
         DatabaseAdapter databaseAdapter = new DatabaseAdapter(this);
         long result = databaseAdapter.insertInitialTripData(tripName, tripStartPoint, tripEndPoint, tripNotes, tripType, tripDate, tripTime, tripStatues, tripAlarmRequestCode);
         if (result != -1) {
-            Toast.makeText(this, "done", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Save Successfully", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void createTripDateAndTime() {
+        String mAM_PM = "AM";
+        if (mDayOrNight == 1)
+            mAM_PM = "PM";
+        tripTime = String.valueOf(mHours + " : " + mMinutes + " : " + mAM_PM);
+        tripDate = String.valueOf(mDay + " / " + mMonth + " / " + mYear);
     }
 
     private void setAlarmRequestCode() {
         DatabaseAdapter databaseAdapter = new DatabaseAdapter(AddTripActivity.this);
         int numberOfIncomingTrips = databaseAdapter.getAllTrips();
         mAlarmRequestCode = numberOfIncomingTrips + 1;
+    }
+
+    private void setHourAndMinutesOfAlarm() {
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        mTimePicker = new TimePickerDialog(AddTripActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                if (selectedHour > 12) {
+                    mHours = selectedHour - 12;
+                    mDayOrNight = Calendar.PM;
+                } else if (selectedHour == 12) {
+                    mHours = selectedHour;
+                    mDayOrNight = Calendar.PM;
+                } else {
+                    mHours = selectedHour;
+                    mDayOrNight = Calendar.AM;
+                }
+                mMinutes = selectedMinute;
+                Toast.makeText(AddTripActivity.this, String.valueOf(mHours + " : " + mMinutes), Toast.LENGTH_SHORT).show();
+
+
+            }
+        }, 0, 0, false);
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
+        mTimePicker.setCancelable(false);
     }
 
     @Override
@@ -274,6 +262,76 @@ public class AddTripActivity extends AppCompatActivity {
             } else if (requestCode == 2222) {
                 mTripEndPoint.setText(feature.text());
             }
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (buttonView == mRoundedTrip) {
+            if (isChecked) {
+                startRoundedTripActivity();
+            }
+        }
+    }
+
+    private void initializePlaceCompleteIntent() {
+        intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(TOKEN_ID)
+                .placeOptions(PlaceOptions.builder()
+                        .backgroundColor(Color.parseColor("#EEEEEE"))
+                        .limit(10)
+                        .build(PlaceOptions.MODE_CARDS))
+                .build(AddTripActivity.this);
+
+    }
+
+    private void saveTrip() {
+        if (validationOfTripInformation()) {
+            if (!checkIfTripNameIsAlreadyExists()) {
+                setAlarm();
+                insertTripToDataBase();
+                Intent intent = new Intent(AddTripActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                mTripName.setError("Name of the trip is already exists");
+            }
+
+        }
+    }
+
+    private void startRoundedTripActivity() {
+        Intent intent = new Intent(AddTripActivity.this, RoundedTripActivity.class);
+        if (!mTripStartPoint.getText().toString().isEmpty())
+            intent.putExtra("tripStartPoint", mTripStartPoint.getText().toString());
+        if (!mTripEndPoint.getText().toString().isEmpty())
+            intent.putExtra("tripEndPoint", mTripEndPoint.getText().toString());
+        startActivity(intent);
+    }
+
+    private void setCalender() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        datePickerDialog = new DatePickerDialog(AddTripActivity.this,
+                onDateSetListener,
+                year, month, day);
+        datePickerDialog.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == mSaveTrip) {
+            saveTrip();
+        } else if (v == mCalendar) {
+            setCalender();
+        } else if (v == mTripStartPoint) {
+            startActivityForResult(intent, 1111);
+        } else if (v == mTripEndPoint) {
+            startActivityForResult(intent, 2222);
+        } else if (v == mAlarm) {
+            setHourAndMinutesOfAlarm();
         }
     }
 }

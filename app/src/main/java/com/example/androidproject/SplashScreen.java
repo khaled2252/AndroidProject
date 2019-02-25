@@ -19,6 +19,7 @@ public class SplashScreen extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Intent intent = new Intent(SplashScreen.this, WelcomeActivity.class);
+                intent.putExtra("tripName", "تلا");
                 startActivity(intent);
                 finish();
                 super.run();

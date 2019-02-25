@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ public class ViewDialog extends AppCompatActivity implements View.OnClickListene
     private String mTripName, mStartPoint, mEndPoint;
     private DatabaseAdapter databaseAdapter;
     private Button mStartTrip, mSnoozeTrip, mCancelTrip;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public void onBackPressed() {
@@ -38,7 +40,9 @@ public class ViewDialog extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_dialog_activity);
-
+        mediaPlayer = MediaPlayer.create(this,
+                Settings.System.DEFAULT_RINGTONE_URI);
+        mediaPlayer.start();
         TextView text = findViewById(R.id.text_dialog);
 
         mStartTrip = findViewById(R.id.btn_dialog_start);
@@ -99,6 +103,7 @@ public class ViewDialog extends AppCompatActivity implements View.OnClickListene
         } else {
             // if permission is generated
             openGoogleMaps();
+            changeTripStatue();
         }
     }
 
@@ -144,6 +149,7 @@ public class ViewDialog extends AppCompatActivity implements View.OnClickListene
         Intent broadCastIntent = new Intent();
         broadCastIntent.putExtra("name", "Snooze");
         broadCastIntent.putExtra("requestCode", "0");
+        broadCastIntent.putExtra("tripName", mTripName);
         broadCastIntent.setAction("com.example.Broadcast");
         broadCastIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
         sendBroadcast(broadCastIntent);
@@ -155,11 +161,22 @@ public class ViewDialog extends AppCompatActivity implements View.OnClickListene
         if (v == mStartTrip) {
             // if true , open google maps
             checkIfPermissionIsGenerated();
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
         } else if (v == mSnoozeTrip) {
             createSnoozeNotification();
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
         } else if (v == mCancelTrip) {
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
             showCancelConformationDialog();
         }
 
+    }
+    private boolean changeTripStatue() {
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter(this);
+        int numberOfRowsAffected = databaseAdapter.updateTripData(mTripName, "status", "Done");
+        return numberOfRowsAffected > 0;
     }
 }

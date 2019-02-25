@@ -54,6 +54,15 @@ public class DatabaseAdapter {
         }
         return "No Data";
     }
+    public String getDataFromTripByDateAndTime(String colName, String tripDate,String tripTime) {
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT " + colName + " FROM trips WHERE date = '" + tripDate + "' and time = '"+ tripTime + "' ;";
+        Cursor c = db.rawQuery(query, null);
+        while (c.moveToNext()) {
+            return c.getString(0);
+        }
+        return "No Data";
+    }
 
     public boolean nameOfTripAlreadyExists(String tripName) {
         db = dbHelper.getReadableDatabase();

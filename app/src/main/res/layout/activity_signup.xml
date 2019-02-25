@@ -3,25 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF"
+    android:background="@color/activityBackgroundColor"
     android:paddingStart="5dp"
     tools:context=".SignupActivity">
 
     <TableRow
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="232dp"
+            android:layout_height="178dp"
+            android:src="@drawable/logo" />
+    </TableRow>
+
+    <TableRow android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.3"
             android:text="@string/e_mail"
             android:textSize="18sp" />
 
         <EditText
             android:id="@+id/emailtxt"
-            android:layout_width="232dp"
-            android:layout_height="44dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
             android:ems="10"
             android:inputType="textEmailAddress"
             android:textSize="14sp" />
@@ -30,20 +41,21 @@
 
     <TableRow
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+      >
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="98dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.3"
             android:text="@string/password"
             android:textSize="18sp" />
 
         <EditText
             android:id="@+id/passtxt"
-            android:layout_width="235dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:layout_weight="0.7"
             android:inputType="textPassword"
             android:textSize="14sp" />
     </TableRow>
@@ -54,15 +66,17 @@
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.3"
             android:text="@string/confirm_password"
             android:textSize="18sp" />
 
         <EditText
             android:id="@+id/confirmpasstxt"
-            android:layout_width="242dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:ems="10"
             android:inputType="textPassword"
             android:textSize="14sp" />
@@ -71,7 +85,6 @@
 
     <TableRow
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:gravity="center">
 
         <Button
@@ -87,7 +100,6 @@
 
     <TableRow
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:gravity="center">
 
         <TextView
@@ -97,6 +109,7 @@
             android:text="@string/or_sign_up_with"
             android:textAlignment="center" />
     </TableRow>
+
     <TableRow
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
@@ -104,47 +117,31 @@
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
-            android:layout_width="132dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
     </TableRow>
 
-    <TableRow
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+    <TableRow android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/textView6"
             android:layout_width="156dp"
+            android:gravity="center"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="57dp"
-            android:text="@string/already_have_an_account"
-            android:textAlignment="center" />
+            android:text="@string/already_have_an_account" />
 
         <TextView
             android:id="@+id/backlogintxt"
             android:layout_width="156dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
             android:text="@string/sign_in"
-            android:textAlignment="center"
             android:textColor="#b30808"
             android:textSize="18sp"
             android:textStyle="bold" />
 
 
     </TableRow>
-
-    <!--   <com.facebook.login.widget.LoginButton
-           android:id="@+id/login_button"
-           android:layout_width="wrap_content"
-           android:layout_height="53dp"
-           android:layout_alignTop="@+id/sign_in_button"
-           android:layout_alignParentStart="true"
-           android:layout_alignParentLeft="true"
-           android:layout_marginStart="28dp"
-           android:layout_marginLeft="28dp"
-           android:layout_marginTop="6dp" />-->
 
 
 </TableLayout>
